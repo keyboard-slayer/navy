@@ -1,0 +1,8 @@
+{
+    "id": "core",
+    "type": "exe",
+    "deps": [
+        "entry",
+        "arch"
+    ]
+}

@@ -1,0 +1,9 @@
+-Isrc/kernel/
+-Isrc/libs/
+-Isrc/entry
+-std=gnu2x
+-Wall
+-Wextra
+-Werror
+-Dauto=__auto_type
+-D__osdk_sched_round_robin__

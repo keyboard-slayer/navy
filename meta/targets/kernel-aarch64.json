@@ -1,0 +1,66 @@
+{
+    "id": "navy-aarch64",
+    "type": "target",
+    "props": {
+        "toolchain": "clang",
+        "arch": "aarch64",
+        "sys": "iridescent",
+        "abi": "sysv",
+        "encoding": "utf8",
+        "freestanding": true,
+        "host": false
+    },
+    "tools": {
+        "cc": {
+            "cmd": [
+                "@latest",
+                "clang"
+            ],
+            "args": [
+                "-target",
+                "aarch64-none-elf",
+                "-fno-stack-protector",
+                "-fno-zero-initialized-in-bss",
+                "-Dauto=__auto_type"
+            ]
+        },
+        "cxx": {
+            "cmd": [
+                "echo"
+            ],
+            "args": [
+                "C++ bad"
+            ]
+        },
+        "ld": {
+            "cmd": [
+                "@latest",
+                "ld.lld"
+            ],
+            "args": [
+                "-nostdlib",
+                "-T./meta/targets/linker-aarch64.ld"
+            ]
+        },
+        "ar": {
+            "cmd": [
+                "@latest",
+                "llvm-ar"
+            ],
+            "args": [
+                "rcs"
+            ]
+        },
+        "as": {
+            "cmd": [
+                "@latest",
+                "clang"
+            ],
+            "args": [
+                "-target",
+                "aarch64-none-elf",
+                "-c"
+            ]
+        }
+    }
+}

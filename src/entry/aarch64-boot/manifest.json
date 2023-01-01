@@ -1,0 +1,8 @@
+{
+    "id": "aarch64-entry",
+    "type": "lib",
+    "provide": "entry",
+    "requires": {
+        "arch": "aarch64"
+    }
+}
