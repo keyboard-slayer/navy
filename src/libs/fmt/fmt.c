@@ -70,7 +70,7 @@ void fmt_impl(Output *writer, char const *fmt, FmtArgs args)
                 {
                     char unit[3] = {0, 'B', 0};
                     char buffer[256] = {0};
-                    char padBuffer[33] = {0};
+                    char padBuffer[32] = {0};
                     char base = 10;
                     size_t pad = 0;
                     int64_t nbr = args.values[current_value]._int;
