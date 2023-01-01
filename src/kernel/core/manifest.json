@@ -3,6 +3,8 @@
     "type": "exe",
     "deps": [
         "entry",
-        "arch"
+        "arch",
+        "base",
+        "fmt"
     ]
 }

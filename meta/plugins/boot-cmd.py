@@ -12,7 +12,7 @@ def bootAarch64():
         "-kernel", kernel,
         "-serial", "mon:stdio",
         "-m", "2G",
-        "-smp", "4"
+        "-smp", "4",
     ]
 
 archs = {

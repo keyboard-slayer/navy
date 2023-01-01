@@ -1,11 +1,10 @@
-#include <base/macro.h>
 #include <abstract/arch.h>
+#include <base/debug.h>
+#include <base/macro.h>
 
 noreturn void bootstrap(void)
 {
-    Output serial = serial_acquire();
-    serial.puts("Hello, World !", 14);
-    serial_release(&serial);
+    println$("Hello, World !");
 
     loop {}
     block_return();

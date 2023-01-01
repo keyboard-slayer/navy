@@ -5,9 +5,9 @@
  * Don't hit me it's temporary,
  * When I'll have a DTB parser it will be
  * gone I promise UwU
-*/
+ */
 
-volatile static uint8_t *uart = (uint8_t *) 0x09000000;
+volatile static uint8_t *uart = (uint8_t *)0x09000000;
 
 void putc(char c)
 {
@@ -16,11 +16,10 @@ void putc(char c)
 
 MaybeSize puts(char const *s, size_t n)
 {
-    size_t i = 0;
-    while (s[i] != '\0' && i < n)
+    size_t i;
+    for (i = 0; (i < n || s[i] != '\0'); i++)
     {
         putc(s[i]);
-        i++;
     }
 
     return Just(MaybeSize, i);
@@ -29,8 +28,7 @@ MaybeSize puts(char const *s, size_t n)
 Output serial_acquire(void)
 {
     // TODO: add a spinlock
-    return (Output)
-    {
+    return (Output){
         .putc = putc,
         .puts = puts,
     };
