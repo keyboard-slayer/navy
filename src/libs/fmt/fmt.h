@@ -68,6 +68,7 @@ fmtvals(Str str)
     (__value),                                          \
     int: fmtvali,                                       \
     size_t: fmtvali,                                    \
+    uint32_t: fmtvali,                                  \
     char const *: fmtvalcs,                             \
     char *: fmtvalcs,                                   \
     char: fmtvalc,                                      \

@@ -1,13 +1,7 @@
 #include <abstract/arch.h>
 #include <stdint.h>
 
-/*
- * Don't hit me it's temporary,
- * When I'll have a DTB parser it will be
- * gone I promise UwU
- */
-
-volatile static uint8_t *uart = (uint8_t *)0x09000000;
+static uint8_t *uart;
 
 void putc(char c)
 {
@@ -38,4 +32,9 @@ void serial_release(Output *output)
 {
     output->putc = NULL;
     output->putc = NULL;
+}
+
+void serial_register(uintptr_t addr)
+{
+    uart = (uint8_t *)addr;
 }

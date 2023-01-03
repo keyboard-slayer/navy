@@ -2,6 +2,9 @@
     "id": "aarch64-entry",
     "type": "lib",
     "provide": "entry",
+    "deps": [
+        "spec"
+    ],
     "requires": {
         "arch": "aarch64"
     }

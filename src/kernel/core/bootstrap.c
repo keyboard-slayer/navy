@@ -5,7 +5,6 @@
 noreturn void bootstrap(void)
 {
     println$("Hello, World !");
-
     loop {}
     block_return();
 }

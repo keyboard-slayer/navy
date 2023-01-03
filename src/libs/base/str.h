@@ -30,6 +30,7 @@ SOFTWARE.
 #include <stdbool.h>
 #include <stdint.h>
 #include <libc/string.h>
+#include <base/maybe.h>
 
 /* --- Inline String Buffer ------------------------------------------------- */
 
@@ -122,7 +123,10 @@ static inline Str str_make_from_str_fix128(StrFix128 const *str_fix) { return (S
 // clang-format on
 
 #define str_n$(n, str) \
-    (Str) { (n), (str) }
+    (Str)              \
+    {                  \
+        (n), (str)     \
+    }
 
 // Create a new instance of a fix size string.
 #define str_fix$(T, str)                               \
@@ -136,3 +140,5 @@ static inline Str str_make_from_str_fix128(StrFix128 const *str_fix) { return (S
 
 #define str_sub(str, start, end) \
     str_n$((end) - (start), (char *)str.buf + (start))
+
+typedef Maybe(Str) MaybeStr;

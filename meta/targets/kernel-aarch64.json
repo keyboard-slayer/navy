@@ -21,7 +21,8 @@
                 "aarch64-none-elf",
                 "-fno-stack-protector",
                 "-fno-zero-initialized-in-bss",
-                "-Dauto=__auto_type"
+                "-Dauto=__auto_type",
+                "-mstrict-align"
             ]
         },
         "cxx": {

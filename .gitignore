@@ -3,3 +3,4 @@ __pycache__/
 target/
 .ninja_log
 .gdb_history
+.vscode/

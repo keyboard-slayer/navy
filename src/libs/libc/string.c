@@ -70,3 +70,64 @@ int strncmp(const char *s1, const char *s2, size_t n)
 
     return 0;
 }
+
+size_t strspn(const char *s1, const char *s2)
+{
+    long i = 0;
+
+    while (s1[i] == s2[i] && s1[i] && s2[i])
+    {
+        i++;
+    }
+
+    return i;
+}
+
+size_t strcspn(const char *s1, const char *s2)
+{
+    size_t i;
+
+    for (i = 0; i < strlen(s1); i++)
+    {
+        for (size_t j = 0; j < strlen(s2); j++)
+        {
+            if (s2[j] == s1[i])
+            {
+                return i;
+            }
+        }
+    }
+
+    return i;
+}
+
+char *strtok(char *str, const char *delim)
+{
+    static char *last = NULL;
+
+    if (str == NULL)
+    {
+        str = last;
+    }
+
+    if (str == NULL)
+    {
+        return NULL;
+    }
+
+    str += strspn(str, delim);
+
+    if (*str == '\0')
+    {
+        return NULL;
+    }
+
+    last = str + strcspn(str, delim);
+
+    if (*last != '\0')
+    {
+        *last++ = '\0';
+    }
+
+    return str;
+}
