@@ -15,19 +15,22 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const std = @import("std");
-const arch = @import("arch");
 const logger = @import("logger");
 
-const log = std.log.scoped(.handover);
+const as = @import("./asm.zig");
+const serial = @import("./serial.zig");
+const simd = @import("./simd.zig");
 
-pub export fn handoverEntry(magic: u64, payload: u64) callconv(.c) noreturn {
-    _ = magic;
-    _ = payload;
+pub export fn _start(magic: usize) callconv(.c) noreturn {
+    simd.setupSSE();
 
-    var serial = arch.serial.Serial.init() catch unreachable;
-    logger.setGlobalWriter(serial.writer()) catch unreachable;
+    var s = serial.Serial.init() catch unreachable;
+    logger.setGlobalWriter(s.writer()) catch unreachable;
 
-    std.log.info("Hello from handover", .{});
+    switch (magic) {
+        0xc001b001 => std.log.debug("Booted using handover", .{}),
+        else => std.log.debug("Booted using limine", .{}),
+    }
 
-    arch.assembly.hlt();
+    as.hlt();
 }

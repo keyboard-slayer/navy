@@ -34,7 +34,7 @@ pub fn out8(port: u16, value: u8) void {
 const Cr = struct {
     number: u8,
 
-    pub fn read(self: Cr) u64 {
+    pub fn read(self: *Cr) u64 {
         var ret: u64 = 0;
 
         switch (self.number) {
@@ -64,7 +64,7 @@ const Cr = struct {
         return ret;
     }
 
-    pub fn write(self: Cr, value: u64) void {
+    pub fn write(self: *Cr, value: u64) void {
         switch (self.number) {
             0 => asm volatile ("mov %[value], %%cr0"
                 :
@@ -89,19 +89,68 @@ const Cr = struct {
             else => unreachable,
         }
     }
+
+    pub fn clear(self: *Cr, value: u64) void {
+        const val = self.read();
+        self.write(val & ~(value));
+    }
+
+    pub fn set(self: *Cr, value: u64) void {
+        const val = self.read();
+        self.write(val | value);
+    }
 };
 
-pub const cr0 = Cr{ .number = 0 };
-pub const cr2 = Cr{ .number = 2 };
-pub const cr3 = Cr{ .number = 3 };
-pub const cr4 = Cr{ .number = 4 };
+pub var cr0 = Cr{ .number = 0 };
+pub var cr2 = Cr{ .number = 2 };
+pub var cr3 = Cr{ .number = 3 };
+pub var cr4 = Cr{ .number = 4 };
+
+pub const Cr0Field = struct {
+    pub const protectedMode = 1 << 0;
+    pub const monitorCoprocessor = 1 << 1;
+    pub const x87FpuEmulation = 1 << 2;
+    pub const taskSwitched = 1 << 3;
+    pub const extensionType = 1 << 4;
+    pub const numericError = 1 << 5;
+    pub const writeProtect = 1 << 16;
+    pub const alignmentMask = 1 << 18;
+    pub const notWriteThrough = 1 << 29;
+    pub const cacheDisable = 1 << 30;
+    pub const paging = 1 << 31;
+};
+
+pub const Cr4Field = struct {
+    pub const virtualMode = 1 << 0;
+    pub const protectedModeVirtualInterrupts = 1 << 1;
+    pub const timeStampDisable = 1 << 2;
+    pub const debuggingExtensions = 1 << 3;
+    pub const pageSizeExtensions = 1 << 4;
+    pub const physicalAddrESSEXTENSION = 1 << 5;
+    pub const machineCheck = 1 << 6;
+    pub const pageGlobal = 1 << 7;
+    pub const performanceMonitoringCounter = 1 << 8;
+    pub const osfxsr = 1 << 9;
+    pub const osxmmexcpt = 1 << 10;
+    pub const userModeInstructionPrevention = 1 << 11;
+    pub const virtualMachineExtensions = 1 << 13;
+    pub const saferModeExtensions = 1 << 14;
+    pub const fgsbase= 1 << 16;
+    pub const pcide = 1 << 17;
+    pub const osxsave = 1 << 18;
+    pub const smep = 1 << 20;
+    pub const smap = 1 << 21;
+    pub const protectionKey = 1 << 22;
+    pub const controlFlowEnforcement = 1 << 23;
+    pub const protectionKeySupervisorPage = 1 << 24;
+};
 
 pub const Msr = struct {
     pub const apic = 0x1B;
     pub const efer = 0xC0000080;
     pub const star = 0xC0000081;
     pub const lstar = 0xC0000082;
-    pub const compat_star = 0xC0000083;
+    pub const compatStar = 0xC0000083;
     pub const syscall_flag_mask = 0xC0000084;
     pub const fs_base = 0xC0000100;
     pub const gs_base = 0xC0000101;

@@ -14,8 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const handover = @import("./handover.zig");
+const as = @import("./asm.zig");
 
-comptime {
-    _ = handover;
+pub fn setupSSE() void {
+    as.cr0.clear(as.Cr0Field.x87FpuEmulation);
+    as.cr0.set(as.Cr0Field.monitorCoprocessor);
+
+    as.cr4.set(as.Cr4Field.osfxsr);
+    as.cr4.set(as.Cr4Field.osxmmexcpt);
 }

@@ -20,12 +20,6 @@ const builtin = @import("builtin");
 const arch = @import("arch");
 const logger = @import("logger");
 
-const boot = @import("./boot/root.zig");
-
-comptime {
-    _ = boot;
-}
-
 pub const std_options: std.Options = .{
     .log_level = if (builtin.mode == .Debug) .debug else .info,
     .logFn = logger.log,

@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+comptime {
+    _ = @import("./boot.zig");
+}
+
 const utils = @import("utils");
 
 pub const assembly = @import("./asm.zig");

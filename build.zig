@@ -16,6 +16,8 @@
 
 const std = @import("std");
 
+const validLoaders = enum { booboot, limine };
+
 fn fetchResource(b: *std.Build, base: []const u8, root: []const u8) !std.StringHashMap(*std.Build.Module) {
     var resList: std.StringHashMap(*std.Build.Module) = .init(b.allocator);
     errdefer resList.deinit();
@@ -48,32 +50,74 @@ fn addImports(resList: std.StringHashMap(*std.Build.Module), module: *std.Build.
     }
 }
 
-fn addRunStep(b: *std.Build, loader: *std.Build.Step.Compile, kernel: *std.Build.Step.Compile) !void {
+fn addRunStep(b: *std.Build, loader: validLoaders, booboot: *std.Build.Step.Compile, kernel: *std.Build.Step.Compile) !void {
     const wf = b.addWriteFiles();
-    const config = wf.add("loader.json",
-        \\  {
-        \\      "entries": [
-        \\          {
-        \\              "name": "Navy",
-        \\              "kernel": "kernel.elf",
-        \\              "protocol": "handover"
-        \\          }
-        \\      ]
-        \\  }
-    );
+
+    var configCopy: *std.Build.Step.InstallFile = undefined;
+    var efiCopy: *std.Build.Step = undefined;
+
+    switch (loader) {
+        .booboot => {
+            const config = wf.add("loader.json",
+                \\  {
+                \\      "entries": [
+                \\          {
+                \\              "name": "Navy",
+                \\              "kernel": "kernel.elf",
+                \\              "protocol": "handover"
+                \\          }
+                \\      ]
+                \\  }
+            );
+
+            const buildStep = b.addInstallArtifact(booboot, .{});
+            configCopy = b.addInstallFile(config, "./sysroot/loader.json");
+            efiCopy = &b.addInstallFile(booboot.getEmittedBin(), "./sysroot/efi/boot/bootx64.efi").step;
+            efiCopy.dependOn(&buildStep.step);
+        },
+
+        .limine => {
+            const config = wf.add("limine.conf",
+                \\timeout: 0
+                \\/navy
+                \\  protocol: limine
+                \\  kernel_path: boot():/kernel.elf
+            );
+
+            configCopy = b.addInstallFile(config, "./sysroot/limine.conf");
+            efiCopy = &b.addSystemCommand(&.{
+                "curl",
+                "-L",
+                "-C",
+                "-",
+                "https://github.com/limine-bootloader/limine/raw/refs/heads/v9.x-binary/BOOTX64.EFI",
+                "--create-dirs",
+                "-o",
+                "./zig-out/sysroot/efi/boot/bootx64.efi",
+            }).step;
+        },
+    }
 
     const runStep = b.step("run", "Run the project");
-    const buildStep = b.addInstallArtifact(loader, .{});
-    const configCopy = b.addInstallFile(config, "./sysroot/loader.json");
-    const efiCopy = b.addInstallFile(loader.getEmittedBin(), "./sysroot/efi/boot/bootx64.efi");
-    const fetchBios = b.addSystemCommand(&.{ "curl", "-C", "-", "https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd", "-o", "./zig-out/bios.fd" });
+
+    const fetchBios = b.addSystemCommand(&.{
+        "curl",
+        "-C",
+        "-",
+        "https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd",
+        "-o",
+        "./zig-out/bios.fd",
+    });
+
     const kernelCopy = b.addInstallFile(kernel.getEmittedBin(), "./sysroot/kernel.elf");
     const qemuStep = b.addSystemCommand(&.{
         "qemu-system-x86_64",
+        "-machine",
+        "q35",
         "-no-reboot",
         "-no-shutdown",
-        "-display",
-        "none",
+        // "-display",
+        // "none",
         "-serial",
         "mon:stdio",
         "-drive",
@@ -84,8 +128,7 @@ fn addRunStep(b: *std.Build, loader: *std.Build.Step.Compile, kernel: *std.Build
         // "-S",
     });
 
-    efiCopy.step.dependOn(&buildStep.step);
-    fetchBios.step.dependOn(&efiCopy.step);
+    fetchBios.step.dependOn(efiCopy);
     kernelCopy.step.dependOn(&kernel.step);
     qemuStep.step.dependOn(&kernelCopy.step);
     qemuStep.step.dependOn(&fetchBios.step);
@@ -94,6 +137,7 @@ fn addRunStep(b: *std.Build, loader: *std.Build.Step.Compile, kernel: *std.Build
 }
 
 pub fn build(b: *std.Build) !void {
+    const loader = b.option(validLoaders, "loader", "Bootloader to use (for the run step)") orelse .booboot;
     const arch = b.option(std.Target.Cpu.Arch, "arch", "Target Architecture") orelse .x86_64;
     const archName = std.enums.tagName(std.Target.Cpu.Arch, arch).?;
     const optimize = b.standardOptimizeOption(.{});
@@ -139,5 +183,5 @@ pub fn build(b: *std.Build) !void {
     b.installArtifact(kernel);
     b.installArtifact(booboot);
 
-    try addRunStep(b, booboot, kernel);
+    try addRunStep(b, loader, booboot, kernel);
 }
