@@ -14,23 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const std = @import("std");
-const logger = @import("logger");
-
-const as = @import("./asm.zig");
-const serial = @import("./serial.zig");
-const simd = @import("./simd.zig");
-
-pub export fn _start(magic: usize) callconv(.c) noreturn {
-    simd.setupSSE();
-
-    var s = serial.Serial.init() catch unreachable;
-    logger.setGlobalWriter(s.writer()) catch unreachable;
-
-    switch (magic) {
-        0xc001b001 => std.log.debug("Booted using handover", .{}),
-        else => std.log.debug("Booted using limine", .{}),
-    }
-
-    as.hlt();
-}
+pub const limine = @import("./limine.zig");

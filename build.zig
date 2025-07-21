@@ -116,8 +116,8 @@ fn addRunStep(b: *std.Build, loader: validLoaders, booboot: *std.Build.Step.Comp
         "q35",
         "-no-reboot",
         "-no-shutdown",
-        // "-display",
-        // "none",
+        "-display",
+        "none",
         "-serial",
         "mon:stdio",
         "-drive",
@@ -149,9 +149,13 @@ pub fn build(b: *std.Build) !void {
     };
 
     const booboot = b.dependency("booboot", .{}).artifact("booboot");
+    const handover = b.dependency("handover", .{}).module("handover");
 
     const archImpl = b.createModule(.{
         .root_source_file = b.path(b.fmt("src/kernel/archs/{s}/root.zig", .{archName})),
+        .imports = &.{
+            .{ .name = "handover", .module = handover },
+        },
     });
 
     const kernel = b.addExecutable(.{

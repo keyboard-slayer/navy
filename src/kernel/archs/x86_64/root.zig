@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 comptime {
-    _ = @import("./boot.zig");
+    _ = @import("./boot/root.zig");
 }
 
 const utils = @import("utils");
