@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.15.0-dev.1108+27212a3e6",
     .dependencies = .{
         .booboot = .{
-            .url = "git+https://github.com/navy-org/booboot#08b8eb9dad6b2bba5febfaec079f7ccd665dc80d",
-            .hash = "booboot-0.0.0-2jFKWp3fAABU1ovulYrlBoehbBh2qgSznLRmx9eQt2z_",
+            .url = "git+https://github.com/navy-org/booboot#959095c8473153536d2df2b502464b568bf52870",
+            .hash = "booboot-0.0.0-2jFKWvacAABOxOvmjIi7Q6IoKs4r7_yqKVnhRhnwxsKy",
         },
         .handover = .{
             .url = "git+https://github.com/navy-org/handover-zig.git#97eb1861b044b581468035eaa16681df946952b7",
