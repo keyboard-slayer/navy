@@ -14,24 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-comptime {
-    _ = @import("./boot/root.zig");
-}
+pub const Registers = packed struct {
+    r15: u64,
+    r14: u64,
+    r13: u64,
+    r12: u64,
+    r11: u64,
+    r10: u64,
+    r9: u64,
+    r8: u64,
+    rbp: u64,
+    rdi: u64,
+    rsi: u64,
+    rdx: u64,
+    rcx: u64,
+    rbx: u64,
+    rax: u64,
+    intno: u64,
+    err: u64,
+    rip: u64,
+    cs: u64,
+    rflags: u64,
+    rsp: u64,
+    ss: u64,
 
-const utils = @import("utils");
-const handover = @import("handover");
-
-pub const assembly = @import("./asm.zig");
-pub const serial = @import("./serial.zig");
-pub const boot = @import("./boot/root.zig");
-
-pub const page_size_max = utils.mem.kib(4);
-pub const page_size_min = utils.mem.kib(4);
-
-const gdt = @import("./gdt.zig");
-const idt = @import("./idt.zig");
-
-pub fn setup() !void {
-    gdt.setup();
-    idt.setup();
-}
+    pub fn fromRsp(rsp: u64) *Registers {
+        return @ptrFromInt(rsp);
+    }
+};

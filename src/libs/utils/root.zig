@@ -14,14 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pub fn kib(comptime x: usize) usize {
-    return x * 1024;
-}
-
-pub fn mib(comptime x: usize) usize {
-    return kib(x) * 1024;
-}
-
-pub fn gib(comptime x: usize) usize {
-    return mib(x) * 1024;
-}
+pub const mem = @import("./mem.zig");

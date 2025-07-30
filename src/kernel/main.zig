@@ -30,5 +30,5 @@ pub const std_options: std.Options = .{
 };
 
 pub fn main() !void {
-    std.log.debug("OK !", .{});
+    asm volatile ("int $0");
 }

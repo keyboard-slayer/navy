@@ -124,6 +124,8 @@ fn addRunStep(b: *std.Build, loader: validLoaders, booboot: *std.Build.Step.Comp
         "format=raw,file=fat:rw:./zig-out/sysroot,media=disk",
         "-bios",
         "./zig-out/bios.fd",
+        // "-d",
+        // "int,guest_errors,cpu_reset",
         // "-s",
         // "-S",
     });
@@ -140,7 +142,7 @@ pub fn build(b: *std.Build) !void {
     const loader = b.option(validLoaders, "loader", "Bootloader to use (for the run step)") orelse .booboot;
     const arch = b.option(std.Target.Cpu.Arch, "arch", "Target Architecture") orelse .x86_64;
     const archName = std.enums.tagName(std.Target.Cpu.Arch, arch).?;
-    const optimize = b.standardOptimizeOption(.{});
+    const optimize = b.standardOptimizeOption(.{ .preferred_optimize_mode = .Debug });
     const target: std.Target.Query = .{
         .cpu_arch = arch,
         .os_tag = .freestanding,

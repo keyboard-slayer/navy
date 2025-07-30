@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const std = @import("std");
-const kib = @import("utils").kib;
+const kib = @import("utils").mem.kib;
 const limine = @import("specs").limine;
 const handover = @import("handover");
 

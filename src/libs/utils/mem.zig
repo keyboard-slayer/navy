@@ -1,4 +1,4 @@
-// Navy - An experimental voyage, one wave at a time.
+// Booboot - The scawy bootloaderrr
 // Copyright (C) 2025   Keyb <contact@keyb.moe>
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,24 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-comptime {
-    _ = @import("./boot/root.zig");
+pub fn kib(comptime x: usize) usize {
+    return x * 1024;
 }
 
-const utils = @import("utils");
-const handover = @import("handover");
+pub fn mib(comptime x: usize) usize {
+    return kib(x) * 1024;
+}
 
-pub const assembly = @import("./asm.zig");
-pub const serial = @import("./serial.zig");
-pub const boot = @import("./boot/root.zig");
-
-pub const page_size_max = utils.mem.kib(4);
-pub const page_size_min = utils.mem.kib(4);
-
-const gdt = @import("./gdt.zig");
-const idt = @import("./idt.zig");
-
-pub fn setup() !void {
-    gdt.setup();
-    idt.setup();
+pub fn gib(comptime x: usize) usize {
+    return mib(x) * 1024;
 }
