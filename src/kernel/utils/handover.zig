@@ -15,20 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const std = @import("std");
-const builtin = @import("builtin");
+const handover = @import("handover");
+const boot = @import("arch").boot;
 
-const arch = @import("arch");
-const logger = @import("logger");
-
-pub const kernelUtils = @import("./utils/root.zig");
-
-pub const std_options: std.Options = .{
-    .log_level = if (builtin.mode == .Debug) .debug else .info,
-    .logFn = logger.log,
-    .page_size_max = arch.page_size_max,
-    .page_size_min = arch.page_size_min,
-};
-
-pub fn main() !void {
-    std.log.debug("OK !", .{});
+pub fn dumpMmap() void {
+    std.log.debug("+-------------------------------------------------------------------+", .{});
+    std.log.debug("|{s: ^24} | {s: ^18} | {s: ^18} |", .{ "Type", "Base", "Limit" });
+    std.log.debug("+-------------------------------------------------------------------+", .{});
+    for (boot.payload.records[0..boot.payload.count]) |r| {
+        std.log.debug("|{s: ^24} | 0x{x:0>16} | 0x{x:0>16} |", .{ std.enums.tagName(handover.Tags, @enumFromInt(r.tag)).?, r.start, r.start + r.size });
+    }
+    std.log.debug("+-------------------------------------------------------------------+", .{});
 }

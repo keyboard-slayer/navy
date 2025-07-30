@@ -169,6 +169,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .imports = &.{
                 .{ .name = "arch", .module = archImpl },
+                .{ .name = "handover", .module = handover },
             },
         }),
     });

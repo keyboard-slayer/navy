@@ -14,21 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const std = @import("std");
-const builtin = @import("builtin");
-
-const arch = @import("arch");
-const logger = @import("logger");
-
-pub const kernelUtils = @import("./utils/root.zig");
-
-pub const std_options: std.Options = .{
-    .log_level = if (builtin.mode == .Debug) .debug else .info,
-    .logFn = logger.log,
-    .page_size_max = arch.page_size_max,
-    .page_size_min = arch.page_size_min,
-};
-
-pub fn main() !void {
-    std.log.debug("OK !", .{});
-}
+pub const handover = @import("./handover.zig");

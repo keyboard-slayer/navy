@@ -19,10 +19,17 @@ const logger = @import("logger");
 const handover = @import("handover");
 
 const limine = @import("./limine.zig");
-
 const as = @import("../asm.zig");
 const serial = @import("../serial.zig");
 const simd = @import("../simd.zig");
+const archSetup = @import("../root.zig").setup;
+
+const kernelUtils = @import("root").kernelUtils;
+
+const main = @import("root").main;
+const log = std.log.scoped(.boot);
+
+pub var payload: *handover.Payload = undefined;
 
 pub export fn _start(magic: usize, arg1: usize) callconv(.c) noreturn {
     simd.setupSSE();
@@ -30,21 +37,32 @@ pub export fn _start(magic: usize, arg1: usize) callconv(.c) noreturn {
     var s = serial.Serial.init() catch unreachable;
     logger.setGlobalWriter(s.writer()) catch unreachable;
 
-    const payload: *handover.Payload = switch (magic) {
+    payload = switch (magic) {
         0xc001b001 => @ptrFromInt(arg1),
         else => limine.apply() catch |e| {
-            std.log.err("failed to apply boot protocol {any}", .{e});
+            log.err("failed to apply boot protocol {any}", .{e});
             as.hlt();
         },
     };
 
     if (payload.magic != @intFromEnum(handover.Tags.MAGIC)) {
-        std.log.err("Invalid handover payload", .{});
+        log.err("Invalid handover payload", .{});
         as.hlt();
     }
 
     const agent: [*:0]u8 = @ptrFromInt(@intFromPtr(payload) + payload.agent);
-    std.log.debug("Booted from {s}", .{agent});
+    log.debug("Booted using {s}", .{agent});
+
+    kernelUtils.handover.dumpMmap();
+
+    archSetup() catch |e| {
+        std.log.err("Couldn't initiate arch {any}", .{e});
+        as.hlt();
+    };
+
+    main() catch |e| {
+        std.log.err("Kernel panic: {any}", .{e});
+    };
 
     as.hlt();
 }

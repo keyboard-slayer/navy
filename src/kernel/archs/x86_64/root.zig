@@ -19,9 +19,17 @@ comptime {
 }
 
 const utils = @import("utils");
+const handover = @import("handover");
 
 pub const assembly = @import("./asm.zig");
 pub const serial = @import("./serial.zig");
+pub const boot = @import("./boot/root.zig");
 
 pub const page_size_max = utils.kib(4);
 pub const page_size_min = utils.kib(4);
+
+const gdt = @import("./gdt.zig");
+
+pub fn setup() !void {
+    gdt.setup();
+}
