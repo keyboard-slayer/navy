@@ -25,11 +25,15 @@ const simd = @import("../simd.zig");
 const archSetup = @import("../root.zig").setup;
 
 const kernelUtils = @import("root").kernelUtils;
-
 const main = @import("root").main;
+
 const log = std.log.scoped(.boot);
 
 pub var payload: *handover.Payload = undefined;
+
+pub fn bootPayload() *handover.Payload {
+    return payload;
+}
 
 pub export fn _start(magic: usize, arg1: usize) callconv(.c) noreturn {
     simd.setupSSE();

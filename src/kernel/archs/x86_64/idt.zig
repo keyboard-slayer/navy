@@ -142,5 +142,5 @@ pub fn setup() void {
     }
 
     IdtDescriptor.load(&idt).apply();
-    log.debug("IDT initialized successfully.", .{});
+    log.debug("IDT initialized", .{});
 }

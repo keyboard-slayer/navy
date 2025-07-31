@@ -20,6 +20,7 @@ const builtin = @import("builtin");
 const arch = @import("arch");
 const logger = @import("logger");
 
+pub const pmm = @import("./pmm.zig");
 pub const kernelUtils = @import("./utils/root.zig");
 
 pub const std_options: std.Options = .{
@@ -28,6 +29,26 @@ pub const std_options: std.Options = .{
     .page_size_max = arch.page_size_max,
     .page_size_min = arch.page_size_min,
 };
+
+pub fn panic(msg: []const u8, _: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
+    logger.print("\nZig panic!\n", .{});
+    logger.print("{s}\n\n", .{msg});
+
+    if (ret_addr) |addr| {
+        logger.print("Return address: {x}\n\n", .{addr});
+    }
+
+    logger.print("Stack trace:\n\n", .{});
+
+    var iter = std.debug.StackIterator.init(ret_addr orelse @returnAddress(), null);
+    defer iter.deinit();
+
+    while (iter.next()) |address| {
+        logger.print("    * 0x{x:0>16}\n", .{address});
+    }
+
+    arch.assembly.hlt();
+}
 
 pub fn main() !void {
     asm volatile ("int $0");

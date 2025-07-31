@@ -14,26 +14,4 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-comptime {
-    _ = @import("./boot/root.zig");
-}
-
-const utils = @import("utils");
-const handover = @import("handover");
-
-pub const assembly = @import("./asm.zig");
-pub const serial = @import("./serial.zig");
-pub const boot = @import("./boot/root.zig");
-
-pub const page_size_max = utils.mem.kib(4);
-pub const page_size_min = utils.mem.kib(4);
-
-const gdt = @import("./gdt.zig");
-const idt = @import("./idt.zig");
-const pmm = @import("root").pmm;
-
-pub fn setup() !void {
-    gdt.setup();
-    idt.setup();
-    try pmm.setup();
-}
+pub const Bitmap = @import("./bitmap.zig").Bitmap;

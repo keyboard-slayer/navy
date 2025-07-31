@@ -124,6 +124,8 @@ fn addRunStep(b: *std.Build, loader: validLoaders, booboot: *std.Build.Step.Comp
         "format=raw,file=fat:rw:./zig-out/sysroot,media=disk",
         "-bios",
         "./zig-out/bios.fd",
+        "-m",
+        "1G",
         // "-d",
         // "int,guest_errors,cpu_reset",
         // "-s",

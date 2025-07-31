@@ -172,5 +172,5 @@ pub fn setup() void {
     GdtDescriptor.load(&gdt).apply();
     gdt.tss.apply();
 
-    log.debug("GDT initialized successfully.", .{});
+    log.debug("GDT initialized", .{});
 }
