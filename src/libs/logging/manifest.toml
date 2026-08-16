@@ -1,0 +1,9 @@
+[lib]
+name = "libs.logging"
+requires = [
+    "libs.fmt",
+    "libs.location"
+]
+
+[props]
+include-path = "."

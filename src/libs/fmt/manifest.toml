@@ -1,0 +1,8 @@
+[lib]
+name = "libs.fmt"
+requires = [
+    "libs.libc"
+]
+
+[props]
+include-path = "."

@@ -1,0 +1,5 @@
+[bin]
+name = "kernel"
+requires = [
+    "kernel.archs.${arch}"
+]

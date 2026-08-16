@@ -1,0 +1,5 @@
+[lib]
+name = "libs.location"
+
+[props]
+include-path = "."

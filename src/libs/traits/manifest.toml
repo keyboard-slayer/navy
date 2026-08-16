@@ -1,0 +1,8 @@
+[lib]
+name = "libs.traits"
+requires = [
+    "libs.result"
+]
+
+[props]
+include-path = "."

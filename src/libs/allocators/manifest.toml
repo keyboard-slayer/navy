@@ -1,0 +1,9 @@
+[lib]
+name = "libs.allocators"
+requires = [
+    "libs.traits",
+    "libs.result"
+]
+
+[props]
+include-path = "include"

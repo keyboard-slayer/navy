@@ -1,0 +1,15 @@
+[lib]
+name = "kernel.archs.x86_64"
+requires = [
+    "libs.result",
+    "libs.location",
+    "libs.traits",
+    "libs.logging",
+    "vendor.limine",
+
+    "libs.allocators",
+    "libs.base64",
+]
+
+[props]
+include-path = "../common"

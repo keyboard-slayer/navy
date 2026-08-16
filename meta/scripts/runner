@@ -1,0 +1,12 @@
+#!/usr/bin/env -S uv run -s
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "buildkit @ git+https://codeberg.org/keyb/buildkit",
+# ]
+# ///
+
+import sys
+import buildkit
+
+sys.exit(buildkit.main())

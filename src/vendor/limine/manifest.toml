@@ -1,0 +1,5 @@
+[lib]
+name = "vendor.limine"
+
+[props]
+include-path = "."
