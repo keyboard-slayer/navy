@@ -1,5 +1,6 @@
-#include "e9.h"
+#include <logging.h>
 
+#include "e9.h"
 #include "port.h"
 
 static enum E9Status status = E9_UNKNOWN;
@@ -30,5 +31,9 @@ Writer e9_writer(void) {
 }
 
 bool e9_available(void) {
+    if (status == E9_UNKNOWN) {
+        e9_write(nullptr, 1, "\n");
+    }
+
     return status == E9_AVAILABLE;
 }

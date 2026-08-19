@@ -1,0 +1,9 @@
+[lib]
+name = "libs.elf"
+description = "Stuff related to ELF"
+requires = [
+    "libs.libc"
+]
+
+[props]
+include-path = "include"

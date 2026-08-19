@@ -1,14 +1,15 @@
 [lib]
 name = "kernel.archs.x86_64"
 requires = [
-    "libs.result",
-    "libs.location",
-    "libs.traits",
-    "libs.logging",
-    "vendor.limine",
-
+    "kernel.libs.pmm",
     "libs.allocators",
     "libs.base64",
+    "libs.elf",
+    "libs.location",
+    "libs.logging",
+    "libs.result",
+    "libs.traits",
+    "vendor.limine",
 ]
 
 [props]

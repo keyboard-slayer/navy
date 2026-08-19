@@ -1,4 +1,5 @@
 #include <allocators/bump.h>
+#include <arch/interface.h>
 #include <base64.h>
 #include <fmt.h>
 #include <logging.h>
@@ -44,6 +45,57 @@ static char* exception_messages[32] = {
 
 static char addrBuffer[256];
 
+static Elf_Ehdr kernel_elf = {0};
+static bool kernel_elf_acquired = false;
+
+static Elf_Sym get_symbol(uintptr_t addr) {
+    if (!kernel_elf_acquired) {
+        kernel_elf_acquired = true;
+        Result kbin = get_kernel_elf();
+        if (kbin.type != EOK) {
+            warn$("Couldn't get kernel symbols");
+        }
+
+        kernel_elf = elf_parse((uint8_t*)kbin.uvalue);
+    }
+
+    if (IS_ELF_NULL(kernel_elf)) {
+        return (Elf_Sym){0};
+    }
+
+    return elf_find_sym(&kernel_elf, addr);
+}
+
+static const char* get_symbol_name(Elf_Sym symbol) {
+    if (IS_ELF_NULL(kernel_elf)) {
+        return nullptr;
+    }
+
+    return elf_get_str(&kernel_elf, ELF_GETATTR(symbol, st_name));
+}
+
+static void dump_backtrace(uintptr_t rbp) {
+    struct _StackFrame {
+        struct _StackFrame* rbp;
+        uint64_t rip;
+    }* stackframe = (void*)rbp;
+
+    size_t frame = 0;
+    for (;;) {
+        if (stackframe->rip == 0) {
+            break;
+        }
+        Elf_Sym rip_sym = get_symbol(stackframe->rip);
+        if (IS_ELF_NULL(rip_sym)) {
+            print$("     * %p\n", stackframe->rip);
+        } else {
+            const char* sym_name = get_symbol_name(rip_sym);
+            print$("     #%d %p (%s+0x%x)\n", frame++, stackframe->rip, sym_name, stackframe->rip - ELF_GETATTR(rip_sym, st_value));
+        }
+        stackframe = stackframe->rbp;
+    }
+}
+
 static void kpanic(Regs regs[const static 1]) {
     uint64_t cr0;
     uint64_t cr2;
@@ -57,14 +109,17 @@ static void kpanic(Regs regs[const static 1]) {
 
     if (e9_available()) {
         BumpAllocator alloc = bump_allocator_create(addrBuffer, 256);
+
         Result res_buff = alloc.base.alloc(&alloc.base, 17);
         if (res_buff.type != EOK) {
+            debug$("Failed to allocate the buffer");
             goto ignore;
         }
 
         utoa(regs->rip, unwrap$(res_buff, char*), 16);
         Result b64 = b64encode(unwrap$(res_buff, char*), (Allocator*)&alloc);
         if (b64.type != EOK) {
+            debug$("Failed to encode to b64");
             goto ignore;
         }
 
@@ -83,8 +138,15 @@ ignore:
     print$("    R12 %p R13 %p R14 %p R15 %p\n", regs->r12, regs->r13, regs->r14, regs->r15);
     print$("    CR0 %p CR2 %p CR3 %p CR4 %p\n", cr0, cr2, cr3, cr4);
     print$("    CS  %p SS  %p FLG %p\n", regs->cs, regs->ss, regs->rflags);
-    print$("    RIP \033[7m%p\033[0m\n\n", regs->rip);
+    Elf_Sym rip_sym = get_symbol(regs->rip);
+    if (IS_ELF_NULL(rip_sym)) {
+        print$("    RIP \033[7m%p\033[0m\n\n", regs->rip);
+    } else {
+        const char* sym_name = get_symbol_name(rip_sym);
+        print$("    RIP \033[7m%p\033[0m (%s+0x%x)\n\n", regs->rip, sym_name, regs->rip - ELF_GETATTR(rip_sym, st_value));
+    }
     print$("    Backrace:\n");
+    dump_backtrace(regs->rbp);
     print$("\n\x1B[0;33m ---------------------------------------------------------------------------------------------------\x1B[0;31m !!!\x1B[0m\n");
 }
 

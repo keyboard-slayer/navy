@@ -19,7 +19,15 @@ def make_relative(func):
 
 
 class Image:
-    def __init__(self, name: str, r: model.Registry, target: str | model.Target):
+    def __init__(
+        self,
+        name: str,
+        r: model.Registry,
+        target: str | model.Target,
+        *,
+        ubsan: bool = False,
+        debug: bool = False,
+    ):
         self.name = name
 
         self.target: model.Target
@@ -31,6 +39,15 @@ class Image:
             self.target = t
 
         self.r = r.bind(self.target)
+
+        if ubsan:
+            self.r.define("ubsan", True)
+            self.target.tools["cc"].args.append("-fsanitize=undefined")
+            self.target.tools["cxx"].args.append("-fsanitize=undefined")
+
+        if debug:
+            self.target.tools["cc"].args.append("-ggdb")
+            self.target.tools["cxx"].args.append("-ggdb")
 
     @property
     def root(self) -> Path:
@@ -47,7 +64,7 @@ class Image:
 
         c = self.r.lookup(name)
         assert c is not None and isinstance(c, model.Component)
-        out = builder._build([c], self.target)[0]
+        out = builder._build([c], self.target, self.r)[0]
         out.copy(dest)
 
     def install_limine(self):

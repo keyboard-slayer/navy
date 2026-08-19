@@ -1,6 +1,7 @@
 #pragma once
 
 #include <location.h>
+#include <stdlib.h>
 #include <traits.h>
 
 typedef enum {
@@ -18,6 +19,10 @@ typedef enum {
 #define warn$(...) _log(LOG_WARN, loc$(), __VA_ARGS__)
 #define error$(...) _log(LOG_ERROR, loc$(), __VA_ARGS__)
 #define print$(...) _log(LOG_NONE, (Loc){}, __VA_ARGS__)
+
+#define panic$(...)                       \
+    _log(LOG_ERROR, loc$(), __VA_ARGS__); \
+    abort();
 
 void logging_set_stream(Writer w);
 

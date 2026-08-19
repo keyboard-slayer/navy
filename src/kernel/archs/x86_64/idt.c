@@ -23,23 +23,23 @@ static void idt_init_entry(IdtEntry* self, uint64_t base) {
 }
 
 // clang-format off
-#define X(n)                                                                \
-    static void idt_handler_##n(void) {                                     \
-        asm volatile(                                                       \
-            "pushq $0;"                                                     \
-            COMMON_ASSEMBLY                                                 \
-            :: "i"((uint64_t)(n)), "r"(interrupt_handler)                   \
-        );                                                                  \
+#define X(n)                                                  \
+    [[gnu::naked]] static void idt_handler_##n(void) {        \
+        asm volatile(                                         \
+            "pushq $0;"                                       \
+            COMMON_ASSEMBLY                                   \
+            :: "i"((uint64_t)(n)), "r"(interrupt_handler)     \
+        );                                                    \
     }
 NO_ERR_INT
 #undef X
 
-#define X(n)                                                      \
-    static void idt_handler_##n(void) {                           \
-        asm volatile(                                             \
-            COMMON_ASSEMBLY                                       \
-            :: "i"((uint64_t)(n)), "r"(interrupt_handler)         \
-        );                                                        \
+#define X(n)                                                  \
+    [[gnu::naked]]static void idt_handler_##n(void) {         \
+        asm volatile(                                         \
+            COMMON_ASSEMBLY                                   \
+            :: "i"((uint64_t)(n)), "r"(interrupt_handler)     \
+        );                                                    \
     }
 ERR_INT
 #undef X

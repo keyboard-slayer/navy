@@ -1,0 +1,5 @@
+[lib]
+name = "vendor.tinyubsan"
+requires = [
+    "libs.logging"
+]

@@ -1,0 +1,8 @@
+[lib]
+name = "kernel.runtime"
+description = "ubsan library based upon tinyubsan"
+requires = [
+    "libs.location",
+    "vendor.tinyubsan"
+]
+

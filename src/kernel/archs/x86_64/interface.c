@@ -5,3 +5,8 @@ noreturn void breakpoint(void) {
     asm volatile("int $3");
     unreachable();
 }
+
+noreturn void abort(void) {
+    asm volatile("int $1");
+    unreachable();
+}

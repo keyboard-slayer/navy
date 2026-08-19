@@ -7,10 +7,10 @@
  */
 
 void* memset(void* s, int c, size_t n) {
-    char* buf = (char*)s;
+    unsigned char* buf = (unsigned char*)s;
 
     while (n--) {
-        *buf++ = (char)c;
+        *buf++ = (unsigned char)c;
     }
 
     return s;

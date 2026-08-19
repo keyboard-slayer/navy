@@ -1,7 +1,7 @@
 [lib]
 name = "libs.result"
 requires = [
-    "libs.location"
+    "libs.location",
 ]
 
 [props]

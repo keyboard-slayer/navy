@@ -3,21 +3,26 @@
 #include <location.h>
 #include <stddef.h>
 
-#define RES_TYPE(F) \
-    F(EOK)          \
-    F(ENODEV)       \
-    F(EINVAL)       \
-    F(ENOMEM)       \
-    F(ENOENT)
-
-#define make_enum(e) e,
-#define make_str(e) #e,
+#define RES_TYPE \
+    X(EOK)       \
+    X(ENODEV)    \
+    X(EINVAL)    \
+    X(ENOMEM)    \
+    X(ENOENT)
 
 enum res_type {
-    RES_TYPE(make_enum)
+
+#define X(e) e,
+    RES_TYPE
+#undef X
+
 };
 
-static const char* res_type_str[] = {RES_TYPE(make_str)};
+static const char* res_type_str[] = {
+#define X(e) #e,
+    RES_TYPE
+#undef X
+};
 
 typedef struct
 {
