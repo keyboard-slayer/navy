@@ -1,5 +1,6 @@
 #pragma once
 
+#include <result.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -23,4 +24,12 @@ typedef struct {
     enum memmap_type type;
 } MemMap;
 
+typedef struct _FreeListNode {
+    uintptr_t base;
+    size_t npages;
+    struct _FreeListNode* next;
+} Freelist;
+
 void pmm_setup(size_t n, MemMap map[const static n]);
+
+Result pmm_alloc(size_t sz);

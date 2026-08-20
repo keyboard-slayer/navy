@@ -78,8 +78,8 @@ Result fmt(Writer writer[const static 1], char fmt[const static 1], ...) {
     return res;
 }
 
-Result vfmt(Writer writer[const static 1], char fmt[const static 1], va_list args) {
-    const char* s = fmt;
+Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list args) {
+    const char* s = _fmt;
 
     while (*s) {
         if (*s == '%') {
@@ -147,6 +147,24 @@ Result vfmt(Writer writer[const static 1], char fmt[const static 1], va_list arg
             case '%': {
                 s++;
                 writer->write(writer, 1, "%");
+                break;
+            }
+
+            case 'r': {
+                s++;
+                Result res = va_arg(args, Result);
+
+                if (res.type != EOK) {
+                    char* const type = res_type_str[res.type];
+                    writer->write(writer, 4, "Err(");
+                    writer->write(writer, strlen(type), type);
+                    writer->write(writer, 1, ")");
+                } else {
+                    writer->write(writer, 3, "Ok(");
+                    fmt(writer, "%x", res.uvalue);
+                    writer->write(writer, 1, ")");
+                }
+
                 break;
             }
 

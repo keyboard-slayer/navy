@@ -18,7 +18,7 @@ enum res_type {
 
 };
 
-static const char* res_type_str[] = {
+static char* const res_type_str[] = {
 #define X(e) #e,
     RES_TYPE
 #undef X

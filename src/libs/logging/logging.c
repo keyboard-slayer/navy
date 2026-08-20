@@ -8,8 +8,8 @@ static Writer writer = {0};
 static const char* level_names[LOG_EVENT_LENGTH] = {
     [LOG_NONE] = "",
     [LOG_DEBUG] = "DEBUG",
-    [LOG_INFO] = "INFO",
-    [LOG_WARN] = "WARN",
+    [LOG_INFO] = "INFO ",
+    [LOG_WARN] = "WARN ",
     [LOG_ERROR] = "ERROR",
 };
 

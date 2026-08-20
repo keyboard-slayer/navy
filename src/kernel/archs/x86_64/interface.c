@@ -10,3 +10,7 @@ noreturn void abort(void) {
     asm volatile("int $1");
     unreachable();
 }
+
+size_t psize(void) {
+    return 4096;
+}

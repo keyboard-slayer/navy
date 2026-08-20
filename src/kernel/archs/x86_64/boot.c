@@ -16,9 +16,24 @@
 [[gnu::used, gnu::section(".limine_requests_end")]] static volatile uint64_t limine_requests_end_marker[] = LIMINE_REQUESTS_END_MARKER;
 [[gnu::used, gnu::section(".limine_requests")]] static volatile struct limine_memmap_request memmap_req = {.id = LIMINE_MEMMAP_REQUEST_ID};
 [[gnu::used, gnu::section(".limine_requests")]] static volatile struct limine_executable_file_request exe_req = {.id = LIMINE_EXECUTABLE_FILE_REQUEST_ID};
+[[gnu::used, gnu::section(".limine_requests")]] static volatile struct limine_hhdm_request hhdm_req = {.id = LIMINE_HHDM_REQUEST_ID};
 
 constexpr size_t memmap_count_limit = 64;
 static MemMap _memmap[memmap_count_limit] = {0};
+
+uintptr_t hhdm(void) {
+    static uintptr_t ret = 0;
+
+    if (ret == 0) {
+        if (hhdm_req.response == nullptr) {
+            panic$("Couldn't get limine HHDM");
+        }
+
+        ret = hhdm_req.response->offset;
+    }
+
+    return ret;
+}
 
 static void parse_memmap(void) {
     if (memmap_req.response == nullptr) [[clang::unlikely]] {
