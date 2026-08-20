@@ -1,0 +1,5 @@
+[lib]
+name = "kernel.mm.pmm"
+
+[props]
+include-path = "include"

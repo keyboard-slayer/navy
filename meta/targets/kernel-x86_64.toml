@@ -5,6 +5,7 @@ name = "kernel-x86_64"
 cmd = "clang"
 args = [
     "--target=x86_64-none-elf",
+    "-fcolor-diagnostics",
     "-std=gnu23",
     "-ffreestanding",
     "-mno-80387",
@@ -15,6 +16,7 @@ args = [
     "-mno-red-zone",
     "-mcmodel=kernel",
     "-fdefer-ts",
+    "-fblocks"
 ]
 
 [tools.cxx]

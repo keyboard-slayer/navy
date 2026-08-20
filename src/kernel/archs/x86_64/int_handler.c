@@ -1,4 +1,4 @@
-#include <allocators/bump.h>
+#include <allocators/freelist.h>
 #include <arch/interface.h>
 #include <base64.h>
 #include <fmt.h>
@@ -108,7 +108,7 @@ static void kpanic(Regs regs[const static 1]) {
     REGS_READ(cr4);
 
     if (e9_available()) {
-        BumpAllocator alloc = bump_allocator_create(addrBuffer, 256);
+        FreelistAllocator alloc = freelist_allocator_create(addrBuffer, 256);
 
         Result res_buff = alloc.base.alloc(&alloc.base, 17);
         if (res_buff.type != EOK) {

@@ -54,21 +54,17 @@ Elf_Shdr elf_get_section(Elf_Ehdr self[const static 1], char name[const static 1
 }
 
 Elf_Sym elf_find_sym(Elf_Ehdr self[const static 1], uintptr_t addr) {
-    static bool acquired = false;
-    static uint8_t* sym = nullptr;
-    static Elf_Shdr symtab = {0};
+    uint8_t* sym = nullptr;
+    Elf_Shdr symtab = {0};
 
-    if (!acquired) {
-        acquired = true;
-        symtab = elf_get_section(self, ".symtab");
-        if (IS_ELF_NULL(symtab)) {
-            warn$("Couldn't find symtab");
-            return (Elf_Sym){0};
-        }
-
-        uintptr_t symtab_off = (uintptr_t)ELF_GETATTR(symtab, sh_offset);
-        sym = (uint8_t*)(symtab_off + (uintptr_t)self->_32);
+    symtab = elf_get_section(self, ".symtab");
+    if (IS_ELF_NULL(symtab)) {
+        warn$("Couldn't find symtab");
+        return (Elf_Sym){0};
     }
+
+    uintptr_t symtab_off = (uintptr_t)ELF_GETATTR(symtab, sh_offset);
+    sym = (uint8_t*)(symtab_off + (uintptr_t)self->_32);
 
     if (sym == nullptr) {
         return (Elf_Sym){0};

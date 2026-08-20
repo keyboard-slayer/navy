@@ -1,4 +1,3 @@
-#include <allocators/bump.h>
 #include <logging.h>
 #include <stddef.h>
 

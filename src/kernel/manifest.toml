@@ -2,5 +2,6 @@
 name = "kernel"
 requires = [
     "kernel.archs.${arch}",
-    "kernel.runtime"
+    "kernel.runtime",
+    "vendor.blocksruntime"
 ]

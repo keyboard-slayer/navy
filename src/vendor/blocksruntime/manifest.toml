@@ -1,0 +1,5 @@
+[lib]
+name = "vendor.blocksruntime"
+
+[props]
+include-path = "include"

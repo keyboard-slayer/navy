@@ -1,7 +1,7 @@
 [lib]
 name = "kernel.archs.x86_64"
 requires = [
-    "kernel.libs.pmm",
+    "kernel.mm.pmm",
     "libs.allocators",
     "libs.base64",
     "libs.elf",

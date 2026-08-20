@@ -1,8 +1,8 @@
 #include <arch/interface.h>
-#include <base64.h>
 #include <elf.h>
 #include <logging.h>
-#include <pmm.h>
+#include <misc/decorator.h>
+#include <mm/pmm.h>
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <vendor/limine.h>
@@ -21,18 +21,12 @@
 constexpr size_t memmap_count_limit = 64;
 static MemMap _memmap[memmap_count_limit] = {0};
 
-uintptr_t hhdm(void) {
-    static uintptr_t ret = 0;
-
-    if (ret == 0) {
-        if (hhdm_req.response == nullptr) {
-            panic$("Couldn't get limine HHDM");
-        }
-
-        ret = hhdm_req.response->offset;
+CACHE(uintptr_t, hhdm) {
+    if (hhdm_req.response == nullptr) {
+        panic$("Couldn't get limine HHDM");
     }
 
-    return ret;
+    return hhdm_req.response->offset;
 }
 
 static void parse_memmap(void) {
@@ -102,6 +96,7 @@ noreturn void kmain(void) {
     pmm_setup(memmap_req.response->entry_count, _memmap);
 
     log$("Hello, World");
+
     for (;;)
         ;
 }

@@ -8,5 +8,5 @@ typedef struct {
 
 typedef struct {
     Result (*alloc)(void*, size_t);
-    void (*free)(void*, void*);
+    void (*free)(void*, void*, size_t);
 } Allocator;

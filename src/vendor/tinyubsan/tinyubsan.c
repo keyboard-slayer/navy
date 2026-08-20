@@ -95,14 +95,14 @@ extern "C" {
 
 static void print_location(const char* message, const struct tu_source_location loc) {
     const char* file = loc.file ? loc.file : "<unknown>";
-    TINYUBSAN_PRINT("tinyubsan: %s at %s:%u:%u\n", message, file, loc.line, loc.column);
+    TINYUBSAN_PRINT("tinyubsan: %s at %s:%u:%u", message, file, loc.line, loc.column);
 }
 
 static void print_type(const char* label, const struct tu_type_descriptor* type) {
     if (!type || !type->name[0]) {
         return;
     }
-    TINYUBSAN_PRINT("tinyubsan:   %s type: %s\n", label, type->name);
+    TINYUBSAN_PRINT("tinyubsan:   %s type: %s", label, type->name);
 }
 
 static void report(const char* message, const struct tu_source_location loc, const struct tu_type_descriptor* type) {

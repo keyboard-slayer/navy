@@ -15,7 +15,7 @@ static GdtDescriptor gdt_desc = {
 };
 
 static void gdt_lazy_init(GdtEntry self[static 1], uint8_t access, uint8_t flags) {
-    memset(self, 0, sizeof(GdtEntry));
+    memset_inline(self, 0, sizeof(GdtEntry));
 
     if (access == 0 && flags == 0) {
         return;

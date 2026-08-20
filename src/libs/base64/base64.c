@@ -8,7 +8,7 @@
 static char charset[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static void toBin(uint8_t n, char* r) {
-    memset(r, '0', 8);
+    memset_inline(r, '0', 8);
 
     size_t i = 7;
     while (n > 0) {
@@ -42,7 +42,7 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
 
     size_t binLen = slen * 8;
     char* binary = (char*)try$(alloc->alloc(alloc, binLen));
-    defer alloc->free(alloc, binary);
+    defer alloc->free(alloc, binary, binLen);
 
     for (size_t i = 0; i < slen; i++) {
         toBin(s[i], binary + (i * 8));
@@ -52,13 +52,13 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
     size_t i = 0;
 
     for (i = 0; (binLen - i) >= 6; i += 6) {
-        memcpy(subStr, binary + i, 6);
+        memcpy_inline(subStr, binary + i, 6);
         result[ptr++] = charset[fromBin(subStr)];
     }
 
     if (binLen - i > 0) {
         size_t padding = 6 - (binLen - i);
-        memset(subStr, '0', 6);
+        memset_inline(subStr, '0', 6);
         memcpy(subStr, binary + i, (binLen - i));
         result[ptr++] = charset[fromBin(subStr)];
 
