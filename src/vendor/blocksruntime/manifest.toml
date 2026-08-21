@@ -1,5 +1,8 @@
 [lib]
 name = "vendor.blocksruntime"
+requires = [
+    "libs.logging"
+]
 
 [props]
 include-path = "include"

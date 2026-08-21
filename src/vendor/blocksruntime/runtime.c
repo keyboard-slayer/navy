@@ -22,8 +22,8 @@
  *
  */
 
+#include <logging.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -412,7 +412,7 @@ static void _Block_byref_release(const void* arg) {
     }
     refcount = shared_struct->flags & BLOCK_REFCOUNT_MASK;
     if (refcount <= 0) {
-        printf("_Block_byref_release: Block byref data structure at %p underflowed\n", arg);
+        warn$("_Block_byref_release: Block byref data structure at %p underflowed\n", arg);
     } else if ((latching_decr_int(&shared_struct->flags) & BLOCK_REFCOUNT_MASK) == 0) {
         // printf("disposing of heap based byref block\n");
         if (shared_struct->flags & BLOCK_HAS_COPY_DISPOSE) {
@@ -460,7 +460,7 @@ void _Block_release(void* arg) {
     } else if (aBlock->flags & BLOCK_IS_GLOBAL) {
         ;
     } else {
-        printf("Block_release called upon a stack Block: %p, ignored\n", (void*)aBlock);
+        warn$("Block_release called upon a stack Block: %p, ignored\n", (void*)aBlock);
     }
 }
 
@@ -588,6 +588,7 @@ void _Block_object_dispose(const void* object, const int flags) {
 #    pragma mark Debugging
 #endif /* if 0 */
 
+#ifdef __BUILDKIT_BLOCK_DEBUG__
 const char* _Block_dump(const void* block) {
     struct Block_layout* closure = (struct Block_layout*)block;
     static char buffer[512];
@@ -661,3 +662,4 @@ const char* _Block_byref_dump(struct Block_byref* src) {
     }
     return buffer;
 }
+#endif // __BUILDKIT_BLOCK_DEBUG__
