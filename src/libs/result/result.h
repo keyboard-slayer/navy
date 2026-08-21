@@ -47,8 +47,26 @@ typedef struct
 #define err$(t) \
     (Result) { .type = (t), .uvalue = 0, .loc = loc$() }
 
-#define unwrap$(v, t) \
+#define unwrap$(t, v) \
     (t)((v).uvalue)
+
+#define unwrap_or(t, v, d)          \
+    ({                              \
+        if ((v).type != EOK) {      \
+            return (d);             \
+        } else {                    \
+            return (t)((v).uvalue); \
+        }                           \
+    })
+
+#define unwrap_or_else(t, v, f)   \
+    ({                            \
+        if ((v).type != EOK) {    \
+            return f();           \
+        } else {                  \
+            return (t)((v).value; \
+        }                         \
+    })
 
 #define try$(EXPR)                        \
     ({                                    \
