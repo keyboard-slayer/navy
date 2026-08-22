@@ -47,25 +47,24 @@ typedef struct
 #define err$(t) \
     (Result) { .type = (t), .uvalue = 0, .loc = loc$() }
 
-#define unwrap$(t, v) \
-    (t)((v).uvalue)
+#define unwrap$(v) ({                                          \
+    __typeof__(v) _v = (v);                                    \
+    if (_v.type != EOK) {                                      \
+        panic$("Unable to unwrap value '%r' from %s", _v, #v); \
+    }                                                          \
+    _v.uvalue;                                                 \
+})
 
-#define unwrap_or(t, v, d)          \
-    ({                              \
-        if ((v).type != EOK) {      \
-            return (d);             \
-        } else {                    \
-            return (t)((v).uvalue); \
-        }                           \
+#define unwrap_or$(v, d)                      \
+    ({                                        \
+        __typeof__(v) _v = (v);               \
+        (_v.type != EOK) ? (d) : (_v.uvalue); \
     })
 
-#define unwrap_or_else(t, v, f)   \
-    ({                            \
-        if ((v).type != EOK) {    \
-            return f();           \
-        } else {                  \
-            return (t)((v).value; \
-        }                         \
+#define unwrap_or_else$(v, f)                   \
+    ({                                          \
+        __typeof__(v) _v = (v);                 \
+        (_v.type != EOK) ? (f()) : (_v.uvalue); \
     })
 
 #define try$(EXPR)                        \

@@ -15,6 +15,7 @@ class Qemu:
             "memory": "2G",
             "reboot": True,
             "shutdown": True,
+            "debug": False,
             "cores": 4,
             "display": "none",
             "e9": False,
@@ -52,6 +53,9 @@ class Qemu:
 
         if self.settings["e9"]:
             arg += ["-debugcon", "mon:stdio"]
+
+        if self.settings["debug"]:
+            arg += ["-d", "int,guest_errors,cpu_reset"]
 
         if self.settings["serial"]:
             arg += ["-serial", "mon:stdio"]
