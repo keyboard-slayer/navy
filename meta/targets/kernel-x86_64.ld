@@ -23,22 +23,31 @@ SECTIONS
     /* that is the beginning of the region. */
     . = 0xffffffff80000000;
 
+    limine_start_addr = .;
     /* Define a section to contain the Limine requests and assign it to its own PHDR */
     .limine_requests : {
         KEEP(*(.limine_requests_start))
         KEEP(*(.limine_requests))
         KEEP(*(.limine_requests_end))
     } :limine_requests
+    limine_end_addr = .;
 
     /* Move to the next memory page for .text */
     . = ALIGN(CONSTANT(MAXPAGESIZE));
+
+    text_start_addr = .;
 
     .text : {
         *(.text .text.*)
     } :text
 
+    text_end_addr = .;
+
+
     /* Move to the next memory page for .rodata */
     . = ALIGN(CONSTANT(MAXPAGESIZE));
+
+    rodata_start_addr = .;
 
     .rodata : {
         *(.rodata .rodata.*)
@@ -59,8 +68,12 @@ SECTIONS
         __init_array_end = .;
     } :rodata
 
+    rodata_end_addr = .;
+
     /* Move to the next memory page for .data */
     . = ALIGN(CONSTANT(MAXPAGESIZE));
+
+    data_start_addr = .;
 
     .data : {
         *(.data .data.*)
@@ -74,6 +87,8 @@ SECTIONS
         *(.bss .bss.*)
         *(COMMON)
     } :data
+
+    data_end_addr = .;
 
     /* Discard .note.* and .eh_frame* since they may cause issues on some hosts. */
     /DISCARD/ : {

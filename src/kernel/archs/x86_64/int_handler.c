@@ -116,14 +116,14 @@ static void kpanic(Regs regs[const static 1]) {
             goto ignore;
         }
 
-        utoa(regs->rip, unwrap$(char*, res_buff), 16);
-        Result b64 = b64encode(unwrap$(char*, res_buff), (Allocator*)&alloc);
+        utoa(regs->rip, (char*)unwrap$(res_buff), 16);
+        Result b64 = b64encode((char*)unwrap$(res_buff), (Allocator*)&alloc);
         if (b64.type != EOK) {
             debug$("Failed to encode to b64");
             goto ignore;
         }
 
-        print$("\033]52;c;%s\033\\", unwrap$(char*, b64));
+        print$("\033]52;c;%s\033\\", (char*)unwrap$(b64));
     }
 
 ignore:

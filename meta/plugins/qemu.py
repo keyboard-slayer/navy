@@ -1,3 +1,5 @@
+import os
+import platform
 import subprocess
 from functools import partial
 from typing import Any
@@ -30,6 +32,9 @@ class Qemu:
             case _:
                 raise RuntimeError(f"{self.arch} is not a known architecture")
 
+    def __kvm_available(self) -> bool:
+        return os.path.exists("/dev/kvm") and os.access("/dev/kvm", os.R_OK)
+
     def run(self):
         arg = [
             f"qemu-system-{self.arch}",
@@ -44,6 +49,11 @@ class Qemu:
             "-drive",
             f"format=raw,file=fat:rw:{self.img.root},media=disk",
         ]
+
+        if self.__kvm_available() and platform.machine() == self.arch:
+            arg += ["-enable-kvm", "-cpu", "host"]
+        else:
+            arg += ["-cpu", "max,+la57,+pdpe1gb"]
 
         if not self.settings["reboot"]:
             arg.append("-no-reboot")

@@ -10,6 +10,7 @@
 #include "e9.h"
 #include "gdt.h"
 #include "idt.h"
+#include "paging.h"
 
 [[gnu::used, gnu::section(".limine_requests")]] static volatile uint64_t limine_base_revision[] = LIMINE_BASE_REVISION(6);
 [[gnu::used, gnu::section(".limine_requests_start")]] static volatile uint64_t limine_requests_start_marker[] = LIMINE_REQUESTS_START_MARKER;
@@ -93,7 +94,8 @@ noreturn void kmain(void) {
 
     parse_memmap();
 
-    pmm_setup(memmap_req.response->entry_count, _memmap);
+    unwrap$(pmm_setup(memmap_req.response->entry_count, _memmap));
+    unwrap$(paging_init(memmap_req.response->entry_count, _memmap));
 
     log$("Hello, World");
 

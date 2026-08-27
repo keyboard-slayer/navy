@@ -18,6 +18,12 @@ enum memmap_type {
 
 };
 
+static char* const memmap_type_str[] = {
+#define X(e) #e,
+    MEMMAP_TYPE
+#undef X
+};
+
 typedef struct {
     uint64_t addr;
     size_t length;

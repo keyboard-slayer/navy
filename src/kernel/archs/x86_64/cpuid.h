@@ -13,3 +13,7 @@ typedef struct {
 
     bool success;
 } CpuidRegs;
+
+bool cpuid_1gb_page_available(void);
+
+bool cpuid_5level_page_available(void);

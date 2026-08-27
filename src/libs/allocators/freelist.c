@@ -7,14 +7,18 @@ static Result alloc(void* ctx, size_t sz) {
     size_t aligned_sz = __builtin_align_up(sz, 8);
 
     while (*node != nullptr) {
-        if ((*node)->size >= sz) {
+        if ((*node)->size >= aligned_sz) {
             void* ret = (void*)*node;
             size_t len = (*node)->size - aligned_sz;
             Freelist* next = (*node)->next;
 
-            *node = (Freelist*)((uint8_t*)ret + aligned_sz);
-            (*node)->size = len;
-            (*node)->next = next;
+            if (len < sizeof(Freelist)) {
+                *node = next;
+            } else {
+                *node = (Freelist*)((uint8_t*)ret + aligned_sz);
+                (*node)->size = len;
+                (*node)->next = next;
+            }
 
             return uok$((uintptr_t)ret);
         }
