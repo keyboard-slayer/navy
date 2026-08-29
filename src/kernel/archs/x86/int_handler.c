@@ -74,33 +74,33 @@ static const char* get_symbol_name(Elf_Sym symbol) {
     return elf_get_str(&kernel_elf, ELF_GETATTR(symbol, st_name));
 }
 
-static void dump_backtrace(uintptr_t rbp) {
+static void dump_backtrace(uintptr_t ebp) {
     struct _StackFrame {
         struct _StackFrame* rbp;
-        uint64_t rip;
-    }* stackframe = (void*)rbp;
+        uint32_t eip;
+    }* stackframe = (void*)ebp;
 
     size_t frame = 0;
     for (;;) {
-        if (stackframe->rip == 0) {
+        if (stackframe->eip == 0) {
             break;
         }
-        Elf_Sym rip_sym = get_symbol(stackframe->rip);
-        if (IS_ELF_NULL(rip_sym)) {
-            print$("     * %p\n", stackframe->rip);
+        Elf_Sym eip_sym = get_symbol(stackframe->eip);
+        if (IS_ELF_NULL(eip_sym)) {
+            print$("     * %p\n", stackframe->eip);
         } else {
-            const char* sym_name = get_symbol_name(rip_sym);
-            print$("     #%d %p (%s+0x%x)\n", frame++, stackframe->rip, sym_name, stackframe->rip - ELF_GETATTR(rip_sym, st_value));
+            const char* sym_name = get_symbol_name(eip_sym);
+            print$("     #%d %p (%s+0x%x)\n", frame++, stackframe->eip, sym_name, stackframe->eip - ELF_GETATTR(eip_sym, st_value));
         }
         stackframe = stackframe->rbp;
     }
 }
 
 static void kpanic(Regs regs[const static 1]) {
-    uint64_t cr0;
-    uint64_t cr2;
-    uint64_t cr3;
-    uint64_t cr4;
+    uint32_t cr0;
+    uint32_t cr2;
+    uint32_t cr3;
+    uint32_t cr4;
 
     REGS_READ(cr0);
     REGS_READ(cr2);
@@ -116,7 +116,7 @@ static void kpanic(Regs regs[const static 1]) {
             goto ignore;
         }
 
-        utoa(regs->rip, (char*)unwrap$(res_buff), 16);
+        utoa(regs->eip, (char*)unwrap$(res_buff), 16);
         Result b64 = b64encode((char*)unwrap$(res_buff), (Allocator*)&alloc);
         if (b64.type != EOK) {
             debug$("Failed to encode to b64");
@@ -132,26 +132,24 @@ ignore:
     print$("    %s was raised\n\n", exception_messages[regs->intno]);
     print$("    Registers:\n");
     print$("    interrupt: %x, err: %x \n", regs->intno, regs->err);
-    print$("    RAX %p RBX %p RCX %p RDX %p\n", regs->rax, regs->rbx, regs->rcx, regs->rdx);
-    print$("    RSI %p RDI %p RBP %p RSP %p\n", regs->rsi, regs->rdi, regs->rbp, regs->rsp);
-    print$("    R8  %p R9  %p R10 %p R11 %p\n", regs->r8, regs->r9, regs->r10, regs->r11);
-    print$("    R12 %p R13 %p R14 %p R15 %p\n", regs->r12, regs->r13, regs->r14, regs->r15);
+    print$("    EAX %p EBX %p ECX %p EDX %p\n", regs->eax, regs->ebx, regs->ecx, regs->edx);
+    print$("    ESI %p EDI %p EBP %p ESP %p\n", regs->esi, regs->edi, regs->ebp, regs->esp);
     print$("    CR0 %p CR2 %p CR3 %p CR4 %p\n", cr0, cr2, cr3, cr4);
-    print$("    CS  %p SS  %p FLG %p\n", regs->cs, regs->ss, regs->rflags);
-    Elf_Sym rip_sym = get_symbol(regs->rip);
-    if (IS_ELF_NULL(rip_sym)) {
-        print$("    RIP \033[7m%p\033[0m\n\n", regs->rip);
+    print$("    CS  %p FLG %p\n", regs->cs, regs->eflags);
+    Elf_Sym eip_sym = get_symbol(regs->eip);
+    if (IS_ELF_NULL(eip_sym)) {
+        print$("    EIP \033[7m%p\033[0m\n\n", regs->eip);
     } else {
-        const char* sym_name = get_symbol_name(rip_sym);
-        print$("    RIP \033[7m%p\033[0m (%s+0x%x)\n\n", regs->rip, sym_name, regs->rip - ELF_GETATTR(rip_sym, st_value));
+        const char* sym_name = get_symbol_name(eip_sym);
+        print$("    EIP \033[7m%p\033[0m (%s+0x%x)\n\n", regs->eip, sym_name, regs->eip - ELF_GETATTR(eip_sym, st_value));
     }
     print$("    Backrace:\n");
-    dump_backtrace(regs->rbp);
+    dump_backtrace(regs->ebp);
     print$("\n\x1B[0;33m ---------------------------------------------------------------------------------------------------\x1B[0;31m !!!\x1B[0m\n");
 }
 
-void interrupt_handler(uint64_t rsp) {
-    Regs* regs = (Regs*)rsp;
+void interrupt_handler(uint32_t esp) {
+    Regs* regs = (Regs*)esp;
 
     if (regs->intno < IRQ0) {
         kpanic(regs);

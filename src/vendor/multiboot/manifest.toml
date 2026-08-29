@@ -1,0 +1,5 @@
+[lib]
+name = "vendor.multiboot2"
+
+[props]
+include-path = "."

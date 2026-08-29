@@ -1,7 +1,9 @@
 [bin]
 name = "kernel"
 requires = [
+    "kernel.acpi",
     "kernel.archs.${arch}",
     "kernel.runtime",
-    "vendor.blocksruntime"
+    "vendor.blocksruntime",
+    "vendor.cc-runtime"
 ]

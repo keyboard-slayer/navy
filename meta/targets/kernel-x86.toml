@@ -1,0 +1,63 @@
+[target]
+name = "kernel-x86"
+
+[tools.cc]
+cmd = "clang"
+args = [
+    "--target=i686-none-elf",
+    "-fcolor-diagnostics",
+    "-std=gnu23",
+    "-ffreestanding",
+    "-mno-80387",
+    "-mno-mmx",
+    "-mno-3dnow",
+    "-mno-sse",
+    "-mno-sse2",
+    "-mno-red-zone",
+    "-fdefer-ts",
+    "-fblocks"
+]
+
+[tools.cxx]
+cmd = "clang++"
+args = [
+    "--target=i686-none-elf",
+    "-ffreestanding",
+    "-mno-80387",
+    "-mno-mmx",
+    "-mno-3dnow",
+    "-mno-sse",
+    "-mno-sse2",
+    "-mno-red-zone",
+    "-fno-exceptions",
+    "-fno-rtti"
+]
+
+[tools.ld]
+cmd = "ld.lld"
+args = [
+    "-m",
+    "elf_i386",
+    "-T${path.from_here('kernel-x86.ld')}",
+    "-z",
+    "max-page-size=0x1000"
+]
+
+[tools.ar]
+cmd = "llvm-ar"
+args = [
+    "rcs"
+]
+
+[tools.as]
+cmd = "nasm"
+args = [
+    "-f",
+    "elf32"
+]
+
+
+[props]
+arch = "x86"
+toolchain = "llvm"
+

@@ -2,8 +2,6 @@
 
 #include <stdint.h>
 
-#include "regs.h"
-
 #define IDT_ENTRY_COUNT (256)
 #define IDT_INT_GATE (0x8E)
 
@@ -15,11 +13,9 @@ typedef struct [[gnu::packed]] {
 typedef struct [[gnu::packed]] {
     uint16_t offset_low;
     uint16_t selector;
-    uint8_t ist;
+    uint8_t zero;
     uint8_t type_attr;
-    uint16_t offset_mid;
-    uint32_t offset_high;
-    uint32_t zero;
+    uint16_t offset_high;
 } IdtEntry;
 
 typedef struct [[gnu::packed]] {
@@ -77,17 +73,14 @@ typedef struct [[gnu::packed]] {
     X(46)          \
     X(47)
 
-// clang-format off
-#define COMMON_ASSEMBLY          \
-    "push %0;"                   \
-    "cld;"                       \
-    REGS_PUSHA                   \
-    "mov %%rsp, %%rdi;"          \
-    "call *%1;"                  \
-    "mov %%rax, %%rsp;"          \
-    REGS_POPA                    \
-    "add $16, %%rsp;"            \
-    "iretq;"
-// clang-format on
+#define COMMON_ASSEMBLY \
+    "push %0;"          \
+    "pushal;"           \
+    "push %%esp;"       \
+    "call *%1;"         \
+    "mov %%eax, %%esp;" \
+    "popal;"            \
+    "add $8, %%esp;"    \
+    "iret;"
 
 void idt_setup(void);

@@ -72,5 +72,5 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
     }
 
     result[ptr] = 0;
-    return uok$((uintptr_t)result);
+    return uok$(result);
 }

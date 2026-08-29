@@ -39,7 +39,7 @@ typedef struct
     (Result) { .type = EOK, .uvalue = 0, .loc = loc$() }
 
 #define uok$(u) \
-    (Result) { .type = EOK, .uvalue = (u), .loc = loc$() }
+    (Result) { .type = EOK, .uvalue = (size_t)(u), .loc = loc$() }
 
 #define iok$(i) \
     (Result) { .type = EOK, .ivalue = (i), .loc = loc$() }

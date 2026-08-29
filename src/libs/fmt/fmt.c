@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <string.h>
 
 #include "fmt.h"
@@ -87,19 +88,9 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
             case 'd': {
                 s++;
                 char buf[100];
-                int64_t value = va_arg(args, int64_t);
+                ptrdiff_t value = va_arg(args, ptrdiff_t);
 
                 itoa(value, buf, 10);
-                writer->write(writer, strlen(buf), buf);
-                break;
-            }
-
-            case 'u': {
-                s++;
-                char buf[100];
-                uint64_t value = va_arg(args, int64_t);
-
-                utoa(value, buf, 10);
                 writer->write(writer, strlen(buf), buf);
                 break;
             }
@@ -107,12 +98,12 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
             case 'p': {
                 s++;
                 char buf[100];
-                uint64_t value = va_arg(args, uint64_t);
+                size_t value = va_arg(args, size_t);
 
                 utoa(value, buf, 16);
                 writer->write(writer, 2, "0x");
 
-                for (size_t i = 0; i < 16 - strlen(buf); i++) {
+                for (size_t i = strlen(buf); i < sizeof(size_t) * 2; i++) {
                     writer->write(writer, 1, "0");
                 }
 
@@ -123,7 +114,7 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
             case 'x': {
                 s++;
                 char buf[100];
-                uint64_t value = va_arg(args, uint64_t);
+                size_t value = va_arg(args, size_t);
 
                 utoa(value, buf, 16);
                 writer->write(writer, strlen(buf), buf);

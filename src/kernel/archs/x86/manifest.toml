@@ -1,5 +1,5 @@
 [lib]
-name = "kernel.archs.x86_64"
+name = "kernel.archs.x86"
 requires = [
     "kernel.archs.x86_common",
     "kernel.mm.pmm",
@@ -10,7 +10,7 @@ requires = [
     "libs.logging",
     "libs.result",
     "libs.traits",
-    "vendor.limine",
+    "vendor.multiboot2"
 ]
 
 [props]

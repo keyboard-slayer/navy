@@ -20,7 +20,7 @@ static Result alloc(void* ctx, size_t sz) {
                 (*node)->next = next;
             }
 
-            return uok$((uintptr_t)ret);
+            return uok$(ret);
         }
 
         node = &(*node)->next;

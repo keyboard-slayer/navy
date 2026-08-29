@@ -62,7 +62,7 @@ class Qemu:
             arg.append("-no-shutdown")
 
         if self.settings["e9"]:
-            arg += ["-debugcon", "mon:stdio"]
+            arg += ["-debugcon", "mon:stdio", "-global", "isa-debugcon.iobase=0xe9"]
 
         if self.settings["debug"]:
             arg += ["-d", "int,guest_errors,cpu_reset"]

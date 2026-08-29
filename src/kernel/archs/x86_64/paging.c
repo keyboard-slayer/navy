@@ -1,20 +1,10 @@
 #include <arch/interface.h>
 #include <logging.h>
 #include <string.h>
-#include <vendor/limine.h>
 
-#include "cpuid.h"
+#include "../x86-common/cpuid.h"
 #include "paging.h"
 #include "result.h"
-
-[[gnu::used, gnu::section(".limine_requests")]] static volatile struct limine_executable_address_request addr_req = {.id = LIMINE_EXECUTABLE_ADDRESS_REQUEST_ID};
-[[gnu::used, gnu::section(".limine_requests")]] static volatile struct limine_paging_mode_request paging_req = {
-    .id = LIMINE_PAGING_MODE_REQUEST_ID,
-    .revision = 0,
-    .mode = LIMINE_PAGING_MODE_X86_64_5LVL,
-    .min_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
-    .max_mode = LIMINE_PAGING_MODE_X86_64_5LVL
-};
 
 static uintptr_t* pmroot = nullptr;
 static bool pml5_enabled = false;
@@ -73,7 +63,7 @@ static Result paging_get_entry(uintptr_t* page, size_t index, bool alloc) {
         memset_inline(ptr, 0, page_size);
         page[index] = ((uintptr_t)ptr - hhdm()) | X64_PAGE_PRESENT | X64_PAGE_WRITABLE | X64_PAGE_USER;
 
-        return uok$((uintptr_t)ptr);
+        return uok$(ptr);
     }
     return err$(ENOENT);
 }
@@ -110,15 +100,11 @@ static Result paging_map_page(uintptr_t* page, uintptr_t virt, uintptr_t phys, u
 }
 
 static Result paging_map_section(uintptr_t base, uintptr_t end, uint8_t flags) {
-    if (addr_req.response == nullptr) {
-        panic$("Couldn't get kernel address");
-    }
-
     uint64_t x64_flags = paging_translate_flags(flags);
     size_t aligned_base = __builtin_align_down(base, page_size);
     size_t len = __builtin_align_up(end - base, page_size);
 
-    uintptr_t phys = aligned_base - addr_req.response->virtual_base + addr_req.response->physical_base;
+    uintptr_t phys = aligned_base - kaddr_virt() + kaddr_phys();
 
     return paging_map(kernel_pmap(), aligned_base, phys, len, flags);
 }
@@ -143,12 +129,12 @@ void paging_load(Pmap page) {
     asm volatile("mov %0, %%cr3" ::"r"((uintptr_t)page._raw - hhdm()));
 }
 
-Result paging_init(size_t n, MemMap map[const static n]) {
+Result paging_setup(bool pml5, size_t n, MemMap map[const static n]) {
     pmroot = (uintptr_t*)unwrap$(pmm_alloc(page_size));
     debug$("Kernel page map root: %p", pmroot);
     memset_inline((void*)pmroot, 0, page_size);
 
-    if (paging_req.response != nullptr && paging_req.response->mode == LIMINE_PAGING_MODE_X86_64_5LVL) {
+    if (pml5) {
         pml5_enabled = true;
         log$("PML5 is supported");
     }

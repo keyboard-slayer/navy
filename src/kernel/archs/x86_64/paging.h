@@ -25,4 +25,4 @@ enum pml_fields : uint64_t {
     X64_PAGE_NO_EXECUTE = (uint64_t)1 << 63,
 };
 
-Result paging_init(size_t n, MemMap map[const static n]);
+Result paging_setup(bool pml5, size_t n, MemMap map[const static n]);
