@@ -36,6 +36,4 @@ def boot(
         i.export_limine(i.root / "vmnavy", [])
         i.install_limine()
 
-    qemu.Qemu("x86_64", i).setReboot(False).setShutdown(False).setE9(True).setDisplay(
-        "sdl"
-    ).run()
+    qemu.Qemu("x86_64", i).setReboot(False).setShutdown(False).setE9(True).run()

@@ -82,7 +82,7 @@ static void dump_backtrace(uintptr_t ebp) {
 
     size_t frame = 0;
     for (;;) {
-        if (stackframe->eip == 0) {
+        if (stackframe->eip < 9) {
             break;
         }
         Elf_Sym eip_sym = get_symbol(stackframe->eip);
