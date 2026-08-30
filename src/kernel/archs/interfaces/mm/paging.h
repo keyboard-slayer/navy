@@ -16,4 +16,6 @@ typedef struct _pmap Pmap;
 
 Pmap kernel_pmap(void);
 
-Result paging_map(Pmap page, uint64_t virt, uint64_t phys, size_t len, uint8_t flags);
+Result paging_map(Pmap page, uintptr_t virt, uintptr_t phys, size_t len, uint8_t flags);
+
+void paging_load(Pmap page);

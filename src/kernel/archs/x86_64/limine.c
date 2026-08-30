@@ -11,8 +11,8 @@
 
 #include "../x86-common/e9.h"
 #include "../x86-common/gdt.h"
+#include "../x86-common/paging.h"
 #include "idt.h"
-#include "paging.h"
 
 noreturn void kmain_limine(void);
 
@@ -138,7 +138,7 @@ noreturn void kmain_limine(void) {
     parse_memmap();
 
     unwrap$(pmm_setup(memmap_req.response->entry_count, _memmap));
-    unwrap$(paging_setup(paging_req.response->mode == LIMINE_PAGING_MODE_X86_64_5LVL, memmap_req.response->entry_count, _memmap));
+    unwrap$(paging_setup(paging_req.response->mode == LIMINE_PAGING_MODE_X86_64_5LVL ? 5 : 4, memmap_req.response->entry_count, _memmap));
 
     Rsdp* rsdp = (Rsdp*)unwrap$(rsdp_load((uintptr_t)rsdp_req.response->address));
     unwrap$(rsdt_load(rsdp));

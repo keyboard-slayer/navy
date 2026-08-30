@@ -12,7 +12,7 @@ struct [[gnu::packed]] _pmap {
     uintptr_t* _raw;
 };
 
-enum pml_fields : uint64_t {
+enum pml_fields : size_t {
     X64_PAGE_PRESENT = 1 << 0,
     X64_PAGE_WRITABLE = 1 << 1,
     X64_PAGE_USER = 1 << 2,
@@ -22,7 +22,7 @@ enum pml_fields : uint64_t {
     X64_PAGE_DIRTY = 1 << 6,
     X64_PAGE_HUGE = 1 << 7,
     X64_PAGE_GLOBAL = 1 << 8,
-    X64_PAGE_NO_EXECUTE = (uint64_t)1 << 63,
+    X64_PAGE_NO_EXECUTE = (size_t)1 << 63,
 };
 
-Result paging_setup(bool pml5, size_t n, MemMap map[const static n]);
+Result paging_setup(size_t max_level, size_t n, MemMap map[const static n]);
