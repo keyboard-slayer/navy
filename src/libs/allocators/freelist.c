@@ -1,3 +1,5 @@
+#include <logging.h>
+
 #include "include/allocators/freelist.h"
 
 static Result alloc(void* ctx, size_t sz) {
@@ -5,6 +7,10 @@ static Result alloc(void* ctx, size_t sz) {
     Freelist** node = &self->head;
 
     size_t aligned_sz = __builtin_align_up(sz, 8);
+
+    if (aligned_sz < sizeof(Freelist)) {
+        aligned_sz = sizeof(Freelist);
+    }
 
     while (*node != nullptr) {
         if ((*node)->size >= aligned_sz) {
@@ -20,18 +26,22 @@ static Result alloc(void* ctx, size_t sz) {
                 (*node)->next = next;
             }
 
-            return uok$(ret);
+            return Ok(ret);
         }
 
         node = &(*node)->next;
     }
 
-    return err$(ENOMEM);
+    return Err(ENOMEM);
 }
 
 static void free(void* ctx, void* ptr, size_t sz) {
     FreelistAllocator* self = (FreelistAllocator*)ctx;
     size_t aligned_sz = __builtin_align_up(sz, 8);
+
+    if (aligned_sz < sizeof(Freelist)) {
+        aligned_sz = sizeof(Freelist);
+    }
 
     Freelist* prev = nullptr;
     Freelist** node = &self->head;
@@ -45,7 +55,7 @@ static void free(void* ctx, void* ptr, size_t sz) {
     new_node->size = aligned_sz;
     new_node->next = *node;
 
-    if (*node != nullptr && (uintptr_t)ptr + sz == (uintptr_t)(*node)) {
+    if (*node != nullptr && (uintptr_t)ptr + aligned_sz == (uintptr_t)(*node)) {
         new_node->size += (*node)->size;
         new_node->next = (*node)->next;
     }
@@ -59,6 +69,10 @@ static void free(void* ctx, void* ptr, size_t sz) {
 }
 
 FreelistAllocator freelist_allocator_create(void* start, size_t len) {
+    if (len < sizeof(Freelist)) {
+        return (FreelistAllocator){0};
+    }
+
     Freelist* head = (Freelist*)start;
     head->size = len;
     head->next = nullptr;
@@ -69,15 +83,19 @@ FreelistAllocator freelist_allocator_create(void* start, size_t len) {
             .free = free,
         },
         .head = head,
-        .tail = head
-    };
+        .tail = head};
 }
 
 Result freelist_allocator_refill(FreelistAllocator self[static 1], void* buffer, size_t len) {
+    if (len < sizeof(Freelist) || self->tail == nullptr) {
+        return Err(EINVAL);
+    }
+
     Freelist* node = (Freelist*)buffer;
     node->size = len;
+    node->next = nullptr;
     self->tail->next = node;
-    self->tail = self->tail->next;
+    self->tail = node;
 
-    return ok$();
+    return Ok();
 }

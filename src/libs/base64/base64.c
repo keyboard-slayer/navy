@@ -5,7 +5,7 @@
 
 #include "base64.h"
 
-static char charset[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static void toBin(uint8_t n, char* r) {
     memset_inline(r, '0', 8);
@@ -72,5 +72,5 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
     }
 
     result[ptr] = 0;
-    return uok$(result);
+    return Ok(result);
 }

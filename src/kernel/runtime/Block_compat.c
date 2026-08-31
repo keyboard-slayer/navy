@@ -7,7 +7,7 @@
 static Result block_allocator_init(FreelistAllocator self[static 1]) {
     void* ptr = (void*)try$(pmm_alloc(psize()));
     *self = freelist_allocator_create(ptr, psize());
-    return ok$();
+    return Ok();
 }
 
 static FreelistAllocator alloc;
@@ -31,14 +31,14 @@ void* block_malloc(size_t n) {
             return nullptr;
         }
 
-        freelist_allocator_refill(&alloc, (void*)mem.uvalue, psize());
+        freelist_allocator_refill(&alloc, (void*)mem.value, psize());
         return block_malloc(n);
     } else if (ptr.type != EOK) {
         debug$("Couldn't allocate more memory for blockruntime: %r", ptr);
         return nullptr;
     }
 
-    BlockAllocation* ret = (BlockAllocation*)ptr.uvalue;
+    BlockAllocation* ret = (BlockAllocation*)ptr.value;
     ret->sz = n + sizeof(BlockAllocation);
 
     return (void*)((uint8_t*)ret + sizeof(BlockAllocation));

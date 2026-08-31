@@ -17,16 +17,16 @@ Result rsdp_load(uintptr_t addr) {
 
     if (memcmp(self->signature, "RSD PTR ", 8) != 0 ||
         !rsdp_checksum(sizeof(Rsdp), (uint8_t*)self)) {
-        return err$(EINVAL);
+        return Err(EINVAL);
     }
 
     if (self->revision == 2) {
         debug$("XSDP is available");
         Xsdp* xsdp = (Xsdp*)self;
         if (!rsdp_checksum(xsdp->length, (uint8_t*)xsdp)) {
-            return err$(EINVAL);
+            return Err(EINVAL);
         }
     }
 
-    return uok$(self);
+    return Ok(self);
 }

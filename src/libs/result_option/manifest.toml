@@ -1,5 +1,5 @@
 [lib]
-name = "libs.result"
+name = "libs.result_option"
 requires = [
     "libs.location",
 ]

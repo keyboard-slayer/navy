@@ -50,7 +50,11 @@ class Qemu:
             f"format=raw,file=fat:rw:{self.img.root},media=disk",
         ]
 
-        if self.__kvm_available() and platform.machine() == self.arch:
+        if (
+            self.__kvm_available()
+            and platform.machine() == self.arch
+            and not self.settings["debug"]
+        ):
             arg += ["-enable-kvm", "-cpu", "host"]
         else:
             arg += ["-cpu", "max,+la57,+pdpe1gb"]

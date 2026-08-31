@@ -15,7 +15,7 @@ Result e9_write([[gnu::unused]] void* ctx, size_t n, char buf[const static n]) {
     }
 
     if (status == E9_UNAVAILABLE) {
-        return err$(ENODEV);
+        return Err(ENODEV);
     }
 
     size_t i;
@@ -23,7 +23,7 @@ Result e9_write([[gnu::unused]] void* ctx, size_t n, char buf[const static n]) {
         out8(0xe9, buf[i]);
     }
 
-    return uok$(i);
+    return Ok(i);
 }
 
 Writer e9_writer(void) {

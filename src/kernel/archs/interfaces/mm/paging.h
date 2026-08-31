@@ -12,7 +12,26 @@ typedef enum : uint8_t {
     PAGE_HUGE = 1 << 5,
 } MapFlag;
 
-typedef struct _pmap Pmap;
+typedef struct {
+    int width;
+    void* ptr;
+} Pmap;
+
+static inline uint64_t pmap_read(Pmap self[const static 1], size_t index) {
+    if (self->width == 64) {
+        return ((uint64_t*)self->ptr)[index];
+    } else {
+        return ((uint32_t*)self->ptr)[index];
+    }
+}
+
+static inline void pmap_write(Pmap self[static 1], size_t index, uint64_t value) {
+    if (self->width == 64) {
+        ((uint64_t*)self->ptr)[index] = value;
+    } else {
+        ((uint32_t*)self->ptr)[index] = (uint32_t)value;
+    }
+}
 
 Pmap kernel_pmap(void);
 

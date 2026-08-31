@@ -16,7 +16,7 @@ IndentPPDirectives: AfterHash
 ForEachMacros: ["__dummy_foreach"]
 SpaceBeforeParens: ControlStatementsExceptForEachMacros
 QualifierAlignment: Left
-AlignAfterOpenBracket: BlockIndent
+AlignAfterOpenBracket: Align
 SeparateDefinitionBlocks: Always
 NamespaceIndentation: None
 PointerAlignment: Left

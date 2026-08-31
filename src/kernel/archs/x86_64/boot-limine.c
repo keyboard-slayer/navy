@@ -11,10 +11,16 @@
 
 #include "../x86-common/e9.h"
 #include "../x86-common/gdt.h"
-#include "../x86-common/paging.h"
 #include "idt.h"
+#include "paging.h"
 
 noreturn void kmain_limine(void);
+
+static Gdt gdt = {
+    .entries = {
+        [0] = {0},
+    },
+};
 
 [[gnu::used, gnu::section(".limine_requests_start")]] static volatile uint64_t limine_requests_start_marker[] = LIMINE_REQUESTS_START_MARKER;
 [[gnu::used, gnu::section(".limine_requests_end")]] static volatile uint64_t limine_requests_end_marker[] = LIMINE_REQUESTS_END_MARKER;
@@ -30,8 +36,7 @@ noreturn void kmain_limine(void);
     .id = LIMINE_PAGING_MODE_REQUEST_ID,
     .mode = LIMINE_PAGING_MODE_X86_64_5LVL,
     .min_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
-    .max_mode = LIMINE_PAGING_MODE_X86_64_5LVL
-};
+    .max_mode = LIMINE_PAGING_MODE_X86_64_5LVL};
 
 constexpr size_t memmap_count_limit = 64;
 static MemMap _memmap[memmap_count_limit] = {0};
@@ -106,10 +111,10 @@ static void parse_memmap(void) {
 
 Result get_kernel_elf(void) {
     if (exe_req.response == nullptr) [[clang::unlikely]] {
-        return err$(ENOENT);
+        return Err(ENOENT);
     }
 
-    return uok$(exe_req.response->executable_file->address);
+    return Ok(exe_req.response->executable_file->address);
 }
 
 [[gnu::weak]] noreturn void kmain(void) {
@@ -132,16 +137,16 @@ noreturn void kmain_limine(void) {
         panic$("Couldn't get limine's paging mode");
     }
 
-    gdt_setup();
+    gdt_setup(&gdt, true, None);
     idt_setup();
 
     parse_memmap();
 
-    unwrap$(pmm_setup(memmap_req.response->entry_count, _memmap));
-    unwrap$(paging_setup(paging_req.response->mode == LIMINE_PAGING_MODE_X86_64_5LVL ? 5 : 4, memmap_req.response->entry_count, _memmap));
+    unwrap(pmm_setup(memmap_req.response->entry_count, _memmap));
+    unwrap(paging_setup(paging_req.response->mode == LIMINE_PAGING_MODE_X86_64_5LVL ? 5 : 4, memmap_req.response->entry_count, _memmap));
 
-    Rsdp* rsdp = (Rsdp*)unwrap$(rsdp_load((uintptr_t)rsdp_req.response->address));
-    unwrap$(rsdt_load(rsdp));
+    Rsdp* rsdp = (Rsdp*)unwrap(rsdp_load((uintptr_t)rsdp_req.response->address));
+    unwrap(rsdt_load(rsdp));
 
     log$("Hello, World");
 

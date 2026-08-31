@@ -70,7 +70,7 @@ static __inline bool OSAtomicCompareAndSwapInt(int oldi, int newi, volatile int*
 
 #elif defined(HAVE_SYNC_BOOL_COMPARE_AND_SWAP_INT) && defined(HAVE_SYNC_BOOL_COMPARE_AND_SWAP_LONG)
 
-static __inline bool OSAtomicCompareAndSwapLong(long oldl, long newl, volatile long* dst) {
+[[maybe_unused]] static __inline bool OSAtomicCompareAndSwapLong(long oldl, long newl, volatile long* dst) {
     return __sync_bool_compare_and_swap(dst, oldl, newl);
 }
 
@@ -164,7 +164,7 @@ static int latching_decr_int(int* where) {
 #    pragma mark GC Support Routines
 #endif /* if 0 */
 
-static void* _Block_alloc_default(const unsigned long size, const bool initialCountIsOne, const bool isObject) {
+static void* _Block_alloc_default(const unsigned long size, [[gnu::unused]] const bool initialCountIsOne, [[gnu::unused]] const bool isObject) {
     return block_malloc(size);
 }
 
@@ -172,10 +172,10 @@ static void _Block_assign_default(void* value, void** destptr) {
     *destptr = value;
 }
 
-static void _Block_setHasRefcount_default(const void* ptr, const bool hasRefcount) {
+static void _Block_setHasRefcount_default([[gnu::unused]] const void* ptr, [[gnu::unused]] const bool hasRefcount) {
 }
 
-static void _Block_do_nothing(const void* aBlock) {}
+static void _Block_do_nothing([[gnu::unused]] const void* aBlock) {}
 
 static void _Block_retain_object_default(const void* ptr) {
     if (!ptr)

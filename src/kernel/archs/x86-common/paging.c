@@ -41,33 +41,31 @@ static size_t paging_translate_flags(uint8_t flags) {
     return f;
 }
 
-static Result paging_get_entry(uintptr_t* page, size_t index, bool alloc) {
-    if (page[index] & X64_PAGE_PRESENT) {
-        return uok$(PAGE_GET_PHYS(page[index]) + hhdm());
+static Result paging_get_entry(Pmap page, size_t index, bool alloc) {
+    if (pmap_read(&page, index) & X64_PAGE_PRESENT) {
+        return Ok(PAGE_GET_PHYS(pmap_read(&page, index)) + hhdm());
     } else if (alloc) {
         uintptr_t* ptr = (uintptr_t*)try$(pmm_alloc(page_size));
         memset_inline(ptr, 0, page_size);
-        page[index] = ((uintptr_t)ptr - hhdm()) | X64_PAGE_PRESENT | X64_PAGE_WRITABLE | X64_PAGE_USER;
-
-        return uok$(ptr);
+        pmap_write(&page, index, (uint64_t)ptr - hhdm() | X64_PAGE_PRESENT | X64_PAGE_WRITABLE | X64_PAGE_USER);
+        return Ok(ptr);
     }
-    return err$(ENOENT);
+    return Err(ENOENT);
 }
 
-static Result paging_map_page(uintptr_t* page, uintptr_t virt, uintptr_t phys, size_t flags) {
-
+static Result paging_map_page(Pmap page, uintptr_t virt, uintptr_t phys, size_t flags) {
     size_t end = ((flags & X64_PAGE_HUGE) > 0)
                      ? ((paging_level() > 3 && cpuid_1gb_page_available()) ? 2 : 1)
                      : 0;
 
-    uintptr_t* current = page;
+    Pmap current = page;
     for (size_t lvl = paging_level() - 1; lvl > end; lvl--) {
-        size_t index = PMLX_GET_INDEX(virt, lvl);
-        current = (uintptr_t*)try$(paging_get_entry(current, index, true));
+        size_t index = PMLX_GET_INDEX(page.width, virt, lvl);
+        current.ptr = (void*)try$(paging_get_entry(current, index, true));
     }
 
-    current[PMLX_GET_INDEX(virt, end)] = phys | flags;
-    return ok$();
+    pmap_write(&current, PMLX_GET_INDEX(page.width, virt, end), phys | flags);
+    return Ok();
 }
 
 Result paging_map(Pmap page, uintptr_t virt, uintptr_t phys, size_t len, uint8_t flags) {
@@ -79,13 +77,13 @@ Result paging_map(Pmap page, uintptr_t virt, uintptr_t phys, size_t len, uint8_t
     uint64_t aligned_len = __builtin_align_up(len, align);
 
     for (size_t i = 0; i < aligned_len; i += align) {
-        try$(paging_map_page(page._raw, aligned_virt + i, aligned_phys + i, x64_flags));
+        try$(paging_map_page(page, aligned_virt + i, aligned_phys + i, x64_flags));
     }
 
-    return ok$();
+    return Ok();
 }
 
 void paging_load(Pmap page) {
-    debug$("Setting cr3 to %p", (uintptr_t)page._raw - hhdm());
-    asm volatile("mov %0, %%cr3" ::"r"((uintptr_t)page._raw - hhdm()));
+    debug$("Setting cr3 to %p", (uintptr_t)page.ptr - hhdm());
+    asm volatile("mov %0, %%cr3" ::"r"((uintptr_t)page.ptr - hhdm()));
 }

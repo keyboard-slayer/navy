@@ -16,6 +16,10 @@ Result pmm_setup(size_t n, MemMap map[const static n]) {
             continue;
         }
 
+        if (m->addr == 0) {
+            m->addr += psize();
+        }
+
         void* base = (void*)(__builtin_align_up(m->addr, psize()) + hhdm());
         size_t sz = __builtin_align_down(m->length, psize());
 
@@ -29,7 +33,7 @@ Result pmm_setup(size_t n, MemMap map[const static n]) {
         total_pages += sz / psize();
     }
 
-    return ok$();
+    return Ok();
 }
 
 Result pmm_alloc(size_t sz) {

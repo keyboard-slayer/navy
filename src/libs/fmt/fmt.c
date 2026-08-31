@@ -88,7 +88,7 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
             case 'd': {
                 s++;
                 char buf[100];
-                ptrdiff_t value = va_arg(args, ptrdiff_t);
+                intptr_t value = va_arg(args, intptr_t);
 
                 itoa(value, buf, 10);
                 writer->write(writer, strlen(buf), buf);
@@ -152,7 +152,7 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
                     writer->write(writer, 1, ")");
                 } else {
                     writer->write(writer, 3, "Ok(");
-                    fmt(writer, "%x", res.uvalue);
+                    fmt(writer, "%x", res.value);
                     writer->write(writer, 1, ")");
                 }
 
@@ -160,7 +160,7 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
             }
 
             default: {
-                return err$(EINVAL);
+                return Err(EINVAL);
             }
             }
         } else {
@@ -169,5 +169,5 @@ Result vfmt(Writer writer[const static 1], char _fmt[const static 1], va_list ar
         }
     }
 
-    return ok$();
+    return Ok();
 }

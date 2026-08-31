@@ -8,7 +8,7 @@ requires = [
     "libs.elf",
     "libs.location",
     "libs.logging",
-    "libs.result",
+    "libs.result_option",
     "libs.traits",
     "vendor.limine",
 ]

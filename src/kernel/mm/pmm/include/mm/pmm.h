@@ -25,7 +25,7 @@ static char* const memmap_type_str[] = {
 };
 
 typedef struct {
-    uint64_t addr;
+    uintptr_t addr;
     size_t length;
     enum memmap_type type;
 } MemMap;

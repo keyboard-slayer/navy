@@ -56,7 +56,7 @@ static Elf_Sym get_symbol(uintptr_t addr) {
             warn$("Couldn't get kernel symbols");
         }
 
-        kernel_elf = elf_parse((uint8_t*)kbin.uvalue);
+        kernel_elf = elf_parse((uint8_t*)kbin.value);
     }
 
     if (IS_ELF_NULL(kernel_elf)) {
@@ -116,14 +116,14 @@ static void kpanic(Regs regs[const static 1]) {
             goto ignore;
         }
 
-        utoa(regs->eip, (char*)unwrap$(res_buff), 16);
-        Result b64 = b64encode((char*)unwrap$(res_buff), (Allocator*)&alloc);
+        utoa(regs->eip, (char*)unwrap(res_buff), 16);
+        Result b64 = b64encode((char*)unwrap(res_buff), (Allocator*)&alloc);
         if (b64.type != EOK) {
             debug$("Failed to encode to b64");
             goto ignore;
         }
 
-        print$("\033]52;c;%s\033\\", (char*)unwrap$(b64));
+        print$("\033]52;c;%s\033\\", (char*)unwrap(b64));
     }
 
 ignore:
@@ -157,8 +157,7 @@ void interrupt_handler(uint32_t esp) {
         for (;;) {
             asm volatile(
                 "cli;"
-                "hlt;"
-            );
+                "hlt;");
         }
     }
 

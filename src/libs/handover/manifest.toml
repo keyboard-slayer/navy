@@ -1,5 +1,5 @@
 [lib]
-name = "libs.allocators"
+name = "libs.handover"
 requires = [
     "libs.traits",
     "libs.result_option"

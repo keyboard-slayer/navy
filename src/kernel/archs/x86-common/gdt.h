@@ -75,4 +75,4 @@ typedef struct [[gnu::packed]] {
     GdtEntry entries[GDT_ENTRIES_LENGTH];
 } Gdt;
 
-void gdt_setup(void);
+void gdt_setup(Gdt gdt[static 1], bool longMode, Option address);

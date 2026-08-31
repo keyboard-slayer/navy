@@ -9,8 +9,8 @@ Result rsdt_load(Rsdp rsdp[static const 1]) {
     Rsdt* self = (Rsdt*)(addr + hhdm());
 
     if (!acpi_validate(&self->header, signature)) {
-        return err$(EINVAL);
+        return Err(EINVAL);
     }
 
-    return uok$(self);
+    return Ok(self);
 }

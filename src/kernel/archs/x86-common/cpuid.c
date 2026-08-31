@@ -24,7 +24,7 @@ CpuidRegs cpuid(uint32_t leaf, uint32_t subleaf) {
 }
 
 CACHE(bool, cpuid_1gb_page_available) {
-    CpuidRegs regs = cpuid(CPUID_EXTENDED_FEATURES_LEAF, 0);
+    CpuidRegs regs = cpuid(CPUID_EXTENDED_CPU_INFO_LEAF, 0);
     constexpr uint64_t pdpe1gb_off = 1 << 26;
     bool ret = !regs.success ? false : regs.edx & pdpe1gb_off;
 
@@ -47,7 +47,7 @@ CACHE(bool, cpuid_5level_page_available) {
 }
 
 CACHE(bool, cpuid_long_mode_available) {
-    CpuidRegs regs = cpuid(CPUID_EXTENDED_FEATURES_LEAF, 0);
+    CpuidRegs regs = cpuid(CPUID_EXTENDED_CPU_INFO_LEAF, 0);
     constexpr uint32_t lm_off = 1 << 29;
     bool ret = !regs.success ? false : regs.edx & lm_off;
     if (ret) {

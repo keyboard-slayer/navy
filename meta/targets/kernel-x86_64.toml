@@ -5,8 +5,11 @@ name = "kernel-x86_64"
 cmd = "clang"
 args = [
     "--target=x86_64-none-elf",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
     "-fcolor-diagnostics",
-    "-std=gnu23",
+    "-std=gnu2y",
     "-ffreestanding",
     "-mno-80387",
     "-mno-mmx",

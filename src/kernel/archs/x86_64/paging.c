@@ -4,9 +4,9 @@
 #include <result.h>
 #include <string.h>
 
-#include "../x86-common/paging.h"
+#include "paging.h"
 
-static uintptr_t* pmroot = nullptr;
+static void* pmroot = nullptr;
 static constexpr size_t page_size = 4096;
 static size_t pLevel;
 
@@ -24,7 +24,7 @@ size_t paging_level(void) {
 }
 
 Pmap kernel_pmap(void) {
-    return (Pmap){._raw = pmroot};
+    return (Pmap){.width = 64, .ptr = pmroot};
 }
 
 static Result paging_map_section(uintptr_t base, uintptr_t end, uint8_t flags) {
@@ -32,14 +32,13 @@ static Result paging_map_section(uintptr_t base, uintptr_t end, uint8_t flags) {
     size_t len = __builtin_align_up(end - base, page_size);
 
     uintptr_t phys = aligned_base - kaddr_virt() + kaddr_phys();
-
     return paging_map(kernel_pmap(), aligned_base, phys, len, flags);
 }
 
 Result paging_setup(size_t max_level, size_t n, MemMap map[const static n]) {
-    pmroot = (uintptr_t*)unwrap$(pmm_alloc(page_size));
+    pmroot = (void*)unwrap(pmm_alloc(page_size));
     debug$("Kernel page map root: %p", pmroot);
-    memset_inline((void*)pmroot, 0, page_size);
+    memset_inline(pmroot, 0, page_size);
 
     pLevel = max_level;
 
@@ -54,5 +53,5 @@ Result paging_setup(size_t max_level, size_t n, MemMap map[const static n]) {
 
     paging_load(kernel_pmap());
 
-    return ok$();
+    return Ok();
 }

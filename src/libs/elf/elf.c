@@ -32,10 +32,6 @@ static Elf_Shdr elf_get_sh(Elf_Ehdr self[const static 1], size_t idx) {
     return ret;
 }
 
-static uint8_t* elf_get_sh_data(Elf_Ehdr hdr[const static 1], Elf_Shdr sh[const static 1]) {
-    return ELF_GETATTR(*sh, sh_offset) + (uint8_t*)hdr->_32;
-}
-
 Elf_Shdr elf_get_section(Elf_Ehdr self[const static 1], char name[const static 1]) {
     Elf_Shdr shstrtab = elf_get_sh(self, ELF_GETATTR(*self, e_shstrndx));
     uintptr_t offset = ELF_GETATTR(shstrtab, sh_offset);
@@ -70,7 +66,6 @@ Elf_Sym elf_find_sym(Elf_Ehdr self[const static 1], uintptr_t addr) {
         return (Elf_Sym){0};
     }
 
-    Elf_Sym previous = {0};
     for (size_t off = 0; off < ELF_GETATTR(symtab, sh_size); off += ELF_GETATTR(symtab, sh_entsize)) {
         Elf_Sym symbol = {.is32 = self->is32};
         if (self->is32) {

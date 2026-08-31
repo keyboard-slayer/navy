@@ -5,17 +5,22 @@ SECTIONS
 {
 	. = 1M;
 
+    text_start_addr = .;
 	.text ALIGN(4K) : ALIGN(4K)
 	{
 		*(.multiboot)
 		*(.text)
 	}
+    text_end_addr = .;
 
+    rodata_start_addr = .;
 	.rodata ALIGN(4K) : ALIGN(4K)
 	{
 		*(.rodata)
 	}
+    rodata_end_addr = .;
 
+    data_start_addr = .;
 	.data ALIGN(4K) : ALIGN(4K)
 	{
 		*(.data)
@@ -26,5 +31,6 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+    data_end_addr = .;
 }
 

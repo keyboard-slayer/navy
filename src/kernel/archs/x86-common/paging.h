@@ -6,11 +6,14 @@
 #include <stdint.h>
 
 #define PAGE_GET_PHYS(x) (x & 0x000ffffffffff000)
-#define PMLX_GET_INDEX(addr, level) (((uint64_t)addr & ((uint64_t)0x1ff << (12 + level * 9))) >> (12 + level * 9))
 
-struct [[gnu::packed]] _pmap {
-    uintptr_t* _raw;
-};
+static inline uint64_t PMLX_GET_INDEX(size_t width, uint64_t addr, int level) {
+    if (width == 64) {
+        return (((uint64_t)addr & ((uint64_t)0x1ff << (12 + level * 9))) >> (12 + level * 9));
+    } else {
+        return (((addr) >> (12 + (level) * 9)) & ((level) == 2 ? 0x3 : 0x1FF));
+    }
+}
 
 enum pml_fields : size_t {
     X64_PAGE_PRESENT = 1 << 0,
@@ -24,5 +27,3 @@ enum pml_fields : size_t {
     X64_PAGE_GLOBAL = 1 << 8,
     X64_PAGE_NO_EXECUTE = (size_t)1 << 63,
 };
-
-Result paging_setup(size_t max_level, size_t n, MemMap map[const static n]);
