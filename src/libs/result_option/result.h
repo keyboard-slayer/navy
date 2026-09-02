@@ -1,34 +1,22 @@
 #pragma once
 
+#include <errno.h>
 #include <location.h>
 #include <misc/macros.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#define RES_TYPE \
-    X(EOK)       \
-    X(ENODEV)    \
-    X(EINVAL)    \
-    X(ENOMEM)    \
-    X(ENOENT)
-
-enum res_type {
-
-#define X(e) e,
-    RES_TYPE
-#undef X
-
-};
+#include "option.h"
 
 static char* const res_type_str[] = {
 #define X(e) #e,
-    RES_TYPE
+    ERRNOS
 #undef X
 };
 
 typedef struct
 {
-    enum res_type type;
+    enum errnos type;
     Loc loc;
     intptr_t value;
 } Result;
@@ -48,7 +36,11 @@ typedef struct
 
 intptr_t __unwrap_result(Result r, const char* line);
 
-bool __is_unwrap_safe_result(Result v);
+bool is_ok(Result v);
+
+#define is_err(v) !is_ok((v))
+
+Option result_ok(Result v);
 
 #define __RESULT_UNWRAP_SAFE_INCLUDE__
 #include "utils.h"

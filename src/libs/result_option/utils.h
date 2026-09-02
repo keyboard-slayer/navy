@@ -16,7 +16,7 @@
 })
 
 #define __is_unwrap_safe(v) \
-    _Generic((v), Result: __is_unwrap_safe_result, Option: is_some)(v)
+    _Generic((v), Result: is_ok, Option: is_some)(v)
 
 #define try$(EXPR) ({            \
     __typeof__(EXPR) v = (EXPR); \

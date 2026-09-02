@@ -51,8 +51,8 @@ static bool kernel_elf_acquired = false;
 static Elf_Sym get_symbol(uintptr_t addr) {
     if (!kernel_elf_acquired) {
         kernel_elf_acquired = true;
-        Result kbin = get_kernel_elf();
-        if (kbin.type != EOK) {
+        Option kbin = get_kernel_elf();
+        if (is_none(kbin)) {
             warn$("Couldn't get kernel symbols");
         }
 

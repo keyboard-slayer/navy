@@ -1,0 +1,8 @@
+[lib]
+name = "kernel.mm.slab"
+requires = [
+    "libs.result_option"
+]
+
+[props]
+include-path = "include"

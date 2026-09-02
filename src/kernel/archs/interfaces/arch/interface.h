@@ -6,7 +6,7 @@
 
 noreturn void breakpoint(void);
 
-Result get_kernel_elf(void);
+Option get_kernel_elf(void);
 
 uintptr_t hhdm(void);
 

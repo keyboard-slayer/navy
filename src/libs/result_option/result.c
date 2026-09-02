@@ -6,7 +6,7 @@ const char* res_to_str(Result res) {
     return res_type_str[res.type];
 }
 
-bool __is_unwrap_safe_result(Result v) {
+bool is_ok(Result v) {
     return v.type == EOK;
 }
 
@@ -16,4 +16,12 @@ intptr_t __unwrap_result(Result r, const char* line) {
     }
 
     return r.value;
+}
+
+Option result_ok(Result v) {
+    if (is_ok(v)) {
+        return Some(v.value);
+    } else {
+        return None;
+    }
 }

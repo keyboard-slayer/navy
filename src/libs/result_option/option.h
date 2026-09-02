@@ -22,4 +22,4 @@ intptr_t __unwrap_option(Option o, const char* line);
     (Option) { .state = OPT_NONE }
 
 #define Some(v) ((Option){.state = OPT_SOME, \
-                          .value = (v)})
+                          .value = (intptr_t)(v)})

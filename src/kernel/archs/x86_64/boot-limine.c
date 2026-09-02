@@ -109,12 +109,12 @@ static void parse_memmap(void) {
     }
 }
 
-Result get_kernel_elf(void) {
+Option get_kernel_elf(void) {
     if (exe_req.response == nullptr) [[clang::unlikely]] {
-        return Err(ENOENT);
+        return None;
     }
 
-    return Ok(exe_req.response->executable_file->address);
+    return Some(exe_req.response->executable_file->address);
 }
 
 [[gnu::weak]] noreturn void kmain(void) {

@@ -1,3 +1,4 @@
+#include <logging.h>
 #include <stddefer.h>
 #include <stdint.h>
 #include <string.h>
@@ -58,8 +59,8 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
 
     if (binLen - i > 0) {
         size_t padding = 6 - (binLen - i);
-        memset_inline(subStr, '0', 6);
-        memcpy(subStr, binary + i, (binLen - i));
+        memset_inline(subStr, '0', 7);
+        try$(Err(strncpy_s(subStr, 7, binary + i, binLen - i)));
         result[ptr++] = charset[fromBin(subStr)];
 
         if (padding >= 2) {
@@ -71,6 +72,6 @@ Result b64encode(char s[static const 1], Allocator alloc[static 1]) {
         }
     }
 
-    result[ptr] = 0;
+    result[ptr - 1] = 0;
     return Ok(result);
 }

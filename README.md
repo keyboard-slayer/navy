@@ -7,7 +7,7 @@
 <hr />
 <br />
 
-Navy is a minimalist microkernel written from scratch in *C*. It’s built purely for experimentation, embracing simplicity and the core principles of microkernel design without any pretensions.
+Navy is a minimalist microkernel written from scratch in bleeding-edge *C*. It’s built purely for experimentation, embracing simplicity and the core principles of microkernel design without any pretensions.
 
 ## Build
 

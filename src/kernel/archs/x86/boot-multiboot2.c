@@ -44,11 +44,11 @@ static Result multiboot2_find(multiboot_uint32_t type, void* ctx, bool (*filter_
     return Err(ENOENT);
 }
 
-Result get_kernel_elf(void) {
-    struct multiboot_tag_module* m = (struct multiboot_tag_module*)try$(
-        multiboot2_find(MULTIBOOT_TAG_TYPE_MODULE, "vmnavy32", multiboot2_filter_module));
+Option get_kernel_elf(void) {
+    struct multiboot_tag_module* m = (struct multiboot_tag_module*)try$(result_ok(
+        multiboot2_find(MULTIBOOT_TAG_TYPE_MODULE, "vmnavy32", multiboot2_filter_module)));
 
-    return Ok(m->mod_start);
+    return Some(m->mod_start);
 }
 
 static Result parse_memmap(void) {
